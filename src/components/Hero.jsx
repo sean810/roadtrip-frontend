@@ -6,7 +6,6 @@ function Hero() {
   const [videoLoaded, setVideoLoaded] = useState(false); // video fade
   const videoRef = useRef(null);
 
-  // Text animation (your original logic)
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoaded(true);
@@ -15,7 +14,7 @@ function Hero() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Detect when video is ready
+  
   useEffect(() => {
     const video = videoRef.current;
 
