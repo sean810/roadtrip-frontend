@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@800&family=Inter:wght@400;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: linear-gradient(
+    to bottom,
+    #d9f1f7 25%,
+    #d9f1f7 19%,
+    #d9f1f7 56%,
+    #d9f1f7 82%,
+    #d9f1f7 98%
+  );
+}
+
+.pause-on-hover:hover {
+  animation-play-state: paused;
+}
+
+.pause-on-hover {
+  animation-delay: 2s;
+}
