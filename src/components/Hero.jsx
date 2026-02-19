@@ -28,7 +28,11 @@ function Hero() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden">
+    <section
+  id="home"
+  className="relative w-full min-h-screen overflow-hidden"
+>
+
 
       {/* Background Video */}
       <video

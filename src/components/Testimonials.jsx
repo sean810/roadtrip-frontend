@@ -17,7 +17,11 @@ const fadeUp = {
 
 const Testimonials = () => {
   return (
-    <section className="w-full py-24 bg-skybg">
+    <section
+  id="testimonials"
+  className="w-full py-24 bg-skybg"
+>
+
       <div className="max-w-7xl mx-auto px-6 text-center">
 
         {/* Pill */}

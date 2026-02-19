@@ -4,15 +4,38 @@ import roadtrip from "../assets/logos/roadtrip.png";
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+
+  const sections = [
+    { label: "Home", id: "home" },
+    { label: "About Us", id: "about" },
+    { label: "Fleet", id: "fleet" },
+    { label: "Services", id: "services" },
+    { label: "Partners", id: "partners" },
+    { label: "Testimonials", id: "testimonials" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      const scrollPosition = window.scrollY + 200;
+
+      sections.forEach((section) => {
+        const element = document.getElementById(section.id);
+        if (!element) return;
+
+        if (
+          scrollPosition >= element.offsetTop &&
+          scrollPosition < element.offsetTop + element.offsetHeight
+        ) {
+          setActiveSection(section.id);
+        }
+      });
     };
 
     window.addEventListener("scroll", handleScroll);
 
-    // slower, smoother entrance animation
     const timer = setTimeout(() => {
       setMounted(true);
     }, 300);
@@ -40,33 +63,39 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
         {/* Logo */}
-        <img
-          src={roadtrip}
-          alt="RoadTrip Travel & Courier Services"
-          className="h-12 w-auto"
-        />
+        <a href="#home">
+          <img
+            src={roadtrip}
+            alt="RoadTrip Travel & Courier Services"
+            className="h-12 w-auto"
+          />
+        </a>
 
         {/* Nav Links */}
         <ul className="hidden md:flex items-center gap-10 font-inter font-bold text-[15px] text-[#171E67]">
-          {["Home", "About Us", "Fleet", "Services", "Clients", "Contact"].map(
-            (item) => (
-              <li
-                key={item}
-                className="
-                  relative cursor-pointer
-                  after:absolute after:left-0 after:-bottom-1
-                  after:h-[2px] after:w-full
-                  after:origin-left
-                  after:scale-x-0
-                  after:bg-primary
-                  after:transition-transform after:duration-300
-                  hover:after:scale-x-100
-                "
+          {sections.map((item) => (
+            <li key={item.id} className="relative">
+              <a
+                href={`#${item.id}`}
+                className="relative px-1 py-2"
               >
-                {item}
-              </li>
-            )
-          )}
+                {item.label}
+
+                {/* Active underline */}
+                <span
+                  className={`
+                    absolute left-0 -bottom-1 h-[2px] bg-primary
+                    transition-all duration-300 ease-out
+                    ${
+                      activeSection === item.id
+                        ? "w-full"
+                        : "w-0"
+                    }
+                  `}
+                />
+              </a>
+            </li>
+          ))}
         </ul>
 
         {/* Auth Buttons */}
@@ -96,4 +125,3 @@ function Navbar() {
 }
 
 export default Navbar;
-

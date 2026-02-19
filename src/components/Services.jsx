@@ -66,7 +66,12 @@ function Services() {
   ];
 
   return (
-    <section ref={sectionRef} className="w-full py-28 bg-skybg">
+    <section
+  id="services"
+  ref={sectionRef}
+  className="w-full py-28 bg-skybg"
+>
+
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Section Header */}

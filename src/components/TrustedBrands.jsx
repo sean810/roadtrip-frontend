@@ -61,7 +61,11 @@ const values = [
 
 const TrustedBrands = () => {
   return (
-    <section className="w-full py-24 bg-skybg">
+    <section
+  id="partners"
+  className="w-full py-24 bg-skybg"
+>
+
       <div className="max-w-7xl mx-auto px-6 text-center">
 
         {/* Pill */}
