@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import roadtrip from "../assets/logos/roadtrip.png";
+import { Link } from "react-router-dom";
+
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -100,23 +102,16 @@ function Navbar() {
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-8 font-inter font-bold">
-          <button className="text-[15px] text-[#171E67]">
-            Login
-          </button>
+          <Link to="/login" className="text-[15px] text-[#171E67]">
+  Login
+</Link>
+          <Link
+  to="/register"
+  className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm shadow-sm hover:bg-primary/90 hover:shadow-md"
+>
+  Sign Up
+</Link>
 
-          <button
-            className="
-              bg-primary text-white
-              px-5 py-2.5
-              rounded-lg
-              text-sm
-              shadow-sm
-              transition
-              hover:bg-primary/90 hover:shadow-md
-            "
-          >
-            Sign Up
-          </button>
         </div>
 
       </div>

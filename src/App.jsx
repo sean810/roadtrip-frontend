@@ -1,25 +1,16 @@
-import Navbar from "./components/Navbar"
-import Hero from "./components/Hero"
-import Services from "./components/Services"
-import WhyChooseUs from "./components/WhyChooseUs";
-import TrustedBrands from "./components/TrustedBrands";
-import Testimonials from "./components/Testimonials";
-import Footer from "./components/Footer";
-
-
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
   return (
-    <div className="min-h-screen bg-page font-body">
-      <Navbar />
-      <Hero />
-      <Services />
-      <WhyChooseUs />
-      <TrustedBrands />
-      <Testimonials />
-      <Footer />
-    </div>
-  )
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
