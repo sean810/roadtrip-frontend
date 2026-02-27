@@ -14,89 +14,64 @@ const fadeUp = {
   },
 };
 
-
 const Testimonials = () => {
   return (
-    <section
-  id="testimonials"
-  className="w-full py-24 bg-skybg"
->
-
+    <section id="testimonials" className="w-full py-24 bg-skybg">
       <div className="max-w-7xl mx-auto px-6 text-center">
 
-        {/* Pill */}
-        <Motion.span
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="inline-block px-4 py-1 mb-6 text-sm rounded-full bg-pillTestimonialBg text-primary"
-        >
-          Testimonials
-        </Motion.span>
-
-        {/* Heading */}
-        <Motion.h2
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-5xl md:text-6xl font-abhaya font-extrabold text-primary mb-4"
-        >
-          Hear From Our Clients
-        </Motion.h2>
-
-        {/* Subheading */}
-        <Motion.p
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="max-w-2xl mx-auto text-lg md:text-xl font-abhaya font-extrabold mb-16 text-[#171E67]"
-        >
-          Discover why individuals and organizations continue to choose
-          RoadTrip for exceptional transport experiences.
-        </Motion.p>
-
-        {/* Cards with stagger animation */}
         <Motion.div
-  initial="hidden"
-  whileInView="visible"
-  viewport={{ once: true, margin: "-100px" }}
-  variants={{
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.25,
-      },
-    },
-  }}
-  className="grid md:grid-cols-3 gap-8"
->
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="will-change-transform"
+        >
+          <span className="inline-block px-4 py-1 mb-6 text-sm rounded-full bg-pillTestimonialBg text-primary">
+            Testimonials
+          </span>
 
-          <Motion.div variants={fadeUp}>
-            <TestimonialCard
-              quote="From booking to drop-off, the experience was seamless. Everything was well organized and handled professionally."
-              name="Brian M."
-              pfp={brian}
-            />
-          </Motion.div>
+          <h2 className="text-5xl md:text-6xl font-abhaya font-extrabold text-primary mb-4">
+            Hear From Our Clients
+          </h2>
 
-          <Motion.div variants={fadeUp}>
-            <TestimonialCard
-              quote="Our team needed reliable transport for meetings and events, and the service delivered every single time."
-              name="Corporate Client"
-              pfp={corporate}
-            />
-          </Motion.div>
+          <p className="max-w-2xl mx-auto text-lg md:text-xl font-abhaya font-extrabold mb-16 text-[#171E67]">
+            Discover why individuals and organizations continue to choose RoadTrip.
+          </p>
+        </Motion.div>
 
-          <Motion.div variants={fadeUp}>
-            <TestimonialCard
-              quote="RoadTrip made my airport transfers effortless. The car was clean, the driver was on time, and the entire experience felt smooth and professional."
-              name="James K., Nairobi"
-              pfp={james}
-            />
-          </Motion.div>
+        <Motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: { staggerChildren: 0.2 },
+            },
+          }}
+          className="grid md:grid-cols-3 gap-8"
+        >
+          {[ 
+            {
+              quote: "From booking to drop-off, the experience was seamless.",
+              name: "Brian M.",
+              pfp: brian,
+            },
+            {
+              quote: "Reliable transport for meetings and events.",
+              name: "Corporate Client",
+              pfp: corporate,
+            },
+            {
+              quote: "Airport transfers were effortless and professional.",
+              name: "James K., Nairobi",
+              pfp: james,
+            },
+          ].map((item) => (
+            <Motion.div key={item.name} variants={fadeUp}>
+              <TestimonialCard {...item} />
+            </Motion.div>
+          ))}
         </Motion.div>
 
       </div>
