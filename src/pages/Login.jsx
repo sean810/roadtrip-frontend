@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,39 +13,32 @@ const Login = () => {
 
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const validate = () => {
-    let newErrors = {};
-
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
-
-    return newErrors;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validate();
 
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    try {
+      setLoading(true);
+      setErrors({});
 
-    setErrors({});
-    setSuccess("Login successful! Redirecting...");
+      const { data } = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        formData
+      );
 
-    setTimeout(() => {
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
       navigate("/");
-    }, 1500);
+    } catch (error) {
+      setErrors({
+        backend:
+          error.response?.data?.message ||
+          "Invalid email or password",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,15 +59,9 @@ const Login = () => {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="peer w-full p-3 border rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder=" "
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="Email"
             />
-            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all">
-              Email
-            </label>
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
           </div>
 
           {/* PASSWORD */}
@@ -84,12 +72,9 @@ const Login = () => {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              className="peer w-full p-3 border rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary pr-10"
-              placeholder=" "
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+              placeholder="Password"
             />
-            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all">
-              Password
-            </label>
 
             <div
               className="absolute right-3 top-3 cursor-pointer text-gray-500"
@@ -97,22 +82,22 @@ const Login = () => {
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </div>
-
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-            )}
           </div>
+
+          {errors.backend && (
+            <p className="text-red-500 text-sm text-center">
+              {errors.backend}
+            </p>
+          )}
 
           <button
             type="submit"
-            className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:scale-[1.02] transition"
+            disabled={loading}
+            className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:scale-[1.02] transition disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
 
-          {success && (
-            <p className="text-green-500 text-sm text-center">{success}</p>
-          )}
         </form>
 
         <p className="text-sm text-center mt-6 text-[#171E67]">

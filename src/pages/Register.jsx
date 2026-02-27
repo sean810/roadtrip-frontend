@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
     let newErrors = {};
@@ -38,7 +39,7 @@ const Register = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
 
@@ -47,12 +48,30 @@ const Register = () => {
       return;
     }
 
-    setErrors({});
-    setSuccess("Account created successfully! Redirecting...");
+    try {
+      setLoading(true);
+      setErrors({});
 
-    setTimeout(() => {
-      navigate("/login");
-    }, 1500);
+      const { data } = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      navigate("/");
+    } catch (error) {
+      setErrors({
+        backend:
+          error.response?.data?.message || "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -73,10 +92,10 @@ const Register = () => {
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="peer w-full p-3 border rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary"
+              className="peer w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder=" "
             />
-            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all">
+            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500">
               Full Name
             </label>
             {errors.name && (
@@ -92,10 +111,10 @@ const Register = () => {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="peer w-full p-3 border rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary"
+              className="peer w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder=" "
             />
-            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all">
+            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500">
               Email
             </label>
             {errors.email && (
@@ -111,10 +130,10 @@ const Register = () => {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              className="peer w-full p-3 border rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary pr-10"
+              className="peer w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary pr-10"
               placeholder=" "
             />
-            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all">
+            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500">
               Password
             </label>
 
@@ -136,12 +155,15 @@ const Register = () => {
               type="password"
               value={formData.confirmPassword}
               onChange={(e) =>
-                setFormData({ ...formData, confirmPassword: e.target.value })
+                setFormData({
+                  ...formData,
+                  confirmPassword: e.target.value,
+                })
               }
-              className="peer w-full p-3 border rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-primary"
+              className="peer w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder=" "
             />
-            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500 peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all">
+            <label className="absolute left-3 -top-2.5 text-sm bg-white px-1 text-gray-500">
               Confirm Password
             </label>
 
@@ -152,16 +174,20 @@ const Register = () => {
             )}
           </div>
 
+          {errors.backend && (
+            <p className="text-red-500 text-sm text-center">
+              {errors.backend}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:scale-[1.02] transition"
+            disabled={loading}
+            className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:scale-[1.02] transition disabled:opacity-50"
           >
-            Sign Up
+            {loading ? "Creating..." : "Sign Up"}
           </button>
 
-          {success && (
-            <p className="text-green-500 text-sm text-center">{success}</p>
-          )}
         </form>
 
         <p className="text-sm text-center mt-6 text-[#171E67]">
