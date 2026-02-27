@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import roadtrip from "../assets/logos/roadtrip.png";
-import { Link } from "react-router-dom";
-
 
 function Navbar() {
+  const navigate = useNavigate();
+
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return !!localStorage.getItem("userInfo");
+  });
+
   const [activeSection, setActiveSection] = useState("home");
 
   const sections = [
@@ -48,6 +54,12 @@ function Navbar() {
     };
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("userInfo");
+    setIsLoggedIn(false);
+    navigate("/login");
+  };
+
   return (
     <nav
       className={`
@@ -65,34 +77,25 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
         {/* Logo */}
-        <a href="#home">
+        <Link to="/">
           <img
             src={roadtrip}
             alt="RoadTrip Travel & Courier Services"
             className="h-12 w-auto"
           />
-        </a>
+        </Link>
 
         {/* Nav Links */}
         <ul className="hidden md:flex items-center gap-10 font-inter font-bold text-[15px] text-[#171E67]">
           {sections.map((item) => (
             <li key={item.id} className="relative">
-              <a
-                href={`#${item.id}`}
-                className="relative px-1 py-2"
-              >
+              <a href={`#${item.id}`} className="relative px-1 py-2">
                 {item.label}
-
-                {/* Active underline */}
                 <span
                   className={`
                     absolute left-0 -bottom-1 h-[2px] bg-primary
                     transition-all duration-300 ease-out
-                    ${
-                      activeSection === item.id
-                        ? "w-full"
-                        : "w-0"
-                    }
+                    ${activeSection === item.id ? "w-full" : "w-0"}
                   `}
                 />
               </a>
@@ -102,16 +105,43 @@ function Navbar() {
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-8 font-inter font-bold">
-          <Link to="/login" className="text-[15px] text-[#171E67]">
-  Login
-</Link>
-          <Link
-  to="/register"
-  className="bg-primary text-white px-5 py-2.5 rounded-lg text-sm shadow-sm hover:bg-primary/90 hover:shadow-md"
->
-  Sign Up
-</Link>
+          {!isLoggedIn ? (
+            <>
+              <Link to="/login" className="text-[15px] text-[#171E67]">
+                Login
+              </Link>
 
+              <Link
+                to="/register"
+                className="
+                  bg-primary text-white
+                  px-5 py-2.5
+                  rounded-lg
+                  text-sm
+                  shadow-sm
+                  transition
+                  hover:bg-primary/90 hover:shadow-md
+                "
+              >
+                Sign Up
+              </Link>
+            </>
+          ) : (
+            <button
+    onClick={handleLogout}
+    className="
+      bg-primary text-white
+      px-5 py-2.5
+      rounded-lg
+      text-sm
+      shadow-sm
+      transition
+      hover:bg-primary/90 hover:shadow-md
+    "
+  >
+    Logout
+  </button>
+          )}
         </div>
 
       </div>
