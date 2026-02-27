@@ -24,25 +24,35 @@ function Navbar() {
   ];
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
 
-      const scrollPosition = window.scrollY + 200;
+          const scrollPosition = window.scrollY + 200;
 
-      sections.forEach((section) => {
-        const element = document.getElementById(section.id);
-        if (!element) return;
+          sections.forEach((section) => {
+            const element = document.getElementById(section.id);
+            if (!element) return;
 
-        if (
-          scrollPosition >= element.offsetTop &&
-          scrollPosition < element.offsetTop + element.offsetHeight
-        ) {
-          setActiveSection(section.id);
-        }
-      });
+            if (
+              scrollPosition >= element.offsetTop &&
+              scrollPosition < element.offsetTop + element.offsetHeight
+            ) {
+              setActiveSection(section.id);
+            }
+          });
+
+          ticking = false;
+        });
+
+        ticking = true;
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     const timer = setTimeout(() => {
       setMounted(true);
@@ -76,7 +86,6 @@ function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
-        {/* Logo */}
         <Link to="/">
           <img
             src={roadtrip}
@@ -85,7 +94,6 @@ function Navbar() {
           />
         </Link>
 
-        {/* Nav Links */}
         <ul className="hidden md:flex items-center gap-10 font-inter font-bold text-[15px] text-[#171E67]">
           {sections.map((item) => (
             <li key={item.id} className="relative">
@@ -103,7 +111,6 @@ function Navbar() {
           ))}
         </ul>
 
-        {/* Auth Buttons */}
         <div className="flex items-center gap-8 font-inter font-bold">
           {!isLoggedIn ? (
             <>
@@ -128,19 +135,19 @@ function Navbar() {
             </>
           ) : (
             <button
-    onClick={handleLogout}
-    className="
-      bg-primary text-white
-      px-5 py-2.5
-      rounded-lg
-      text-sm
-      shadow-sm
-      transition
-      hover:bg-primary/90 hover:shadow-md
-    "
-  >
-    Logout
-  </button>
+              onClick={handleLogout}
+              className="
+                bg-primary text-white
+                px-5 py-2.5
+                rounded-lg
+                text-sm
+                shadow-sm
+                transition
+                hover:bg-primary/90 hover:shadow-md
+              "
+            >
+              Logout
+            </button>
           )}
         </div>
 
