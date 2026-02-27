@@ -91,7 +91,7 @@ function Services() {
           </h2>
 
           <p className="mt-6 max-w-3xl text-lg md:text-xl font-abhaya font-extrabold text-[#171E67]">
-            Flexible transport solutions designed to fit your journey across Kenya.
+           Whether you prefer driving yourself or riding with a professional, we provide flexible transport solutions designed to fit your journey across Kenya.
           </p>
         </div>
 

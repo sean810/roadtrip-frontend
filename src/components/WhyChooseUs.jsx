@@ -45,7 +45,7 @@ const WhyChooseUs = () => {
           </h2>
 
           <p className="font-abhaya font-extrabold text-[17px] md:text-[18px] text-[#171E67] leading-relaxed mb-14">
-            Dependable transport services built on trust, care, and consistency.
+            For years, RoadTrip has supported travelers and businesses across Kenya with dependable transport services built on trust, care, and consistency. We provide :
           </p>
         </div>
 
@@ -54,22 +54,22 @@ const WhyChooseUs = () => {
             {
               title: "Trusted Performance",
               description:
-                "Carefully maintained vehicles and punctual service.",
+                "Our vehicles are carefully maintained, our services run on schedule, and our team is committed to keeping your journey smooth from start to finish.",
             },
             {
               title: "Experienced Professionals",
               description:
-                "Trained and vetted drivers across Kenya.",
+                "Every driver is trained, vetted, and equipped with the local experience needed to ensure safe, comfortable travel anywhere in Kenya.",
             },
             {
               title: "Tailored Travel Options",
               description:
-                "Flexible packages that fit your needs.",
+                "Whether you’re planning a solo trip or organizing transport for your team, we craft flexible packages that fit your needs perfectly.",
             },
             {
               title: "Always Here for You",
               description:
-                "Support team ready anytime.",
+                "Day or night, our support team is ready to assist with inquiries, emergencies, or last-minute changes",
             },
           ].map((item, index) => (
             <WhyChooseItem

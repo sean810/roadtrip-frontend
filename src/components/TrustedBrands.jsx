@@ -42,17 +42,39 @@ const fadeUp = {
   },
 };
 
+const values = [
+  {
+    Icon: SecureIcon,
+    title: "Reliable & Secure Services",
+    text:
+      "Our operations are licensed, insured, and supported by strict driver screening to ensure safety, security, and professionalism at all times.",
+  },
+  {
+    Icon: AwardIcon,
+    title: "Recognized for Excellence",
+    text:
+      "Known for our strong customer support, smooth service experience, and commitment to maintaining the highest standards.",
+  },
+  {
+    Icon: TrustIcon,
+    title: "Proven Reliability",
+    text:
+      "A solid history of partnering with major clients and consistently meeting expectations through reliable, well-coordinated transport services.",
+  },
+];
+
 const TrustedBrands = () => {
   return (
     <section id="partners" className="w-full py-24 bg-skybg">
       <div className="max-w-7xl mx-auto px-6 text-center">
 
-        {/* Header Block */}
-        <motion.div
+        {/* Header */}
+        <Motion.div
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
+          className="will-change-transform"
         >
           <span className="inline-block px-4 py-1 mb-6 text-sm rounded-full bg-green-100 text-green-700">
             Trusted Partners
@@ -67,10 +89,10 @@ const TrustedBrands = () => {
             Kenya with dependable transport solutions that consistently deliver
             value and confidence.
           </p>
-        </motion.div>
+        </Motion.div>
 
-        {/* Logos */}
-        <motion.div
+        {/* Marquee */}
+        <Motion.div
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
@@ -111,7 +133,35 @@ const TrustedBrands = () => {
               </div>
             ))}
           </div>
-        </motion.div>
+        </Motion.div>
+
+        {/* Value Highlights (RESTORED SECTION) */}
+        <Motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ staggerChildren: 0.15 }}
+          className="grid md:grid-cols-3 gap-12"
+        >
+          {values.map((value, index) => {
+            const { Icon, title, text } = value;
+            return (
+              <Motion.div
+                key={index}
+                variants={fadeUp}
+                className="flex flex-col items-center text-center will-change-transform"
+              >
+                <img src={Icon} alt={title} className="w-11 h-11 mb-4" />
+                <h4 className="font-abhaya font-extrabold text-[22px] md:text-[23px] text-[#FF5C0B] mb-2">
+                  {title}
+                </h4>
+                <p className="font-abhaya font-extrabold text-[16px] md:text-[17px] text-[#171E67] leading-relaxed">
+                  {text}
+                </p>
+              </Motion.div>
+            );
+          })}
+        </Motion.div>
 
       </div>
     </section>

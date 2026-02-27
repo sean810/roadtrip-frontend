@@ -35,7 +35,7 @@ const Testimonials = () => {
           </h2>
 
           <p className="max-w-2xl mx-auto text-lg md:text-xl font-abhaya font-extrabold mb-16 text-[#171E67]">
-            Discover why individuals and organizations continue to choose RoadTrip.
+            Discover why individuals and organizations continue to choose RoadTrip for exceptional transport experiences.
           </p>
         </Motion.div>
 
@@ -53,17 +53,17 @@ const Testimonials = () => {
         >
           {[ 
             {
-              quote: "From booking to drop-off, the experience was seamless.",
+              quote: "From booking to drop-off, the experience was seamless. Everything was well organized and handled professionally.",
               name: "Brian M.",
               pfp: brian,
             },
             {
-              quote: "Reliable transport for meetings and events.",
+              quote: "Our team needed reliable transport for meetings and events, and the service delivered every single time.",
               name: "Corporate Client",
               pfp: corporate,
             },
             {
-              quote: "Airport transfers were effortless and professional.",
+              quote: "RoadTrip made my airport transfers effortless. The car was clean, the driver was on time, and the entire experience felt smooth and professional.",
               name: "James K., Nairobi",
               pfp: james,
             },
