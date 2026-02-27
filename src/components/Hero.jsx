@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import heroVideo from "../assets/videos/hero-sequence.mp4";
 
 function Hero() {
-  const [loaded, setLoaded] = useState(false); // text animation
-  const [videoLoaded, setVideoLoaded] = useState(false); // video fade
+  const [loaded, setLoaded] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef(null);
 
+  // Text animation
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoaded(true);
@@ -14,29 +15,42 @@ function Hero() {
     return () => clearTimeout(timer);
   }, []);
 
-  
+  // Video load + visibility optimization
   useEffect(() => {
     const video = videoRef.current;
+    if (!video) return;
 
-    if (video) {
-      const handleLoaded = () => setVideoLoaded(true);
-      video.addEventListener("loadeddata", handleLoaded);
+    const handleLoaded = () => setVideoLoaded(true);
+    video.addEventListener("loadeddata", handleLoaded);
 
-      return () => video.removeEventListener("loadeddata", handleLoaded);
-    }
+    // 🔥 Pause video when not visible (huge performance improvement)
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      video.removeEventListener("loadeddata", handleLoaded);
+      observer.disconnect();
+    };
   }, []);
 
   return (
     <section
-  id="home"
-  className="relative w-full min-h-screen overflow-hidden"
->
-
-
-      {/* Background Video */}
+      id="home"
+      className="relative w-full min-h-screen overflow-hidden"
+    >
       <video
         ref={videoRef}
-        className={`absolute inset-0 w-full h-full object-cover brightness-110 contrast-110 transition-opacity duration-1000 ${
+        className={`absolute inset-0 w-full h-full object-cover brightness-110 contrast-110 transition-opacity duration-700 will-change-transform ${
           videoLoaded ? "opacity-100" : "opacity-0"
         }`}
         src={heroVideo}
@@ -47,14 +61,10 @@ function Hero() {
         preload="none"
       />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-secondary/60 to-secondary/30"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-secondary/60 to-secondary/30" />
 
-      {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 min-h-screen flex items-center">
         <div>
-
-          {/* Heading */}
           <h1
             className={`
               font-abhaya font-extrabold
@@ -70,7 +80,6 @@ function Hero() {
             </span>
           </h1>
 
-          {/* Paragraph */}
           <p
             className={`
               mt-6 max-w-lg
@@ -84,7 +93,6 @@ function Hero() {
             Nairobi and beyond.
           </p>
 
-          {/* Buttons */}
           <div
             className={`
               mt-10 flex gap-5
@@ -111,10 +119,8 @@ function Hero() {
               View Fleet
             </button>
           </div>
-
         </div>
       </div>
-
     </section>
   );
 }
