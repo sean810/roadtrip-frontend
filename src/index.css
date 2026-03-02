@@ -35,3 +35,46 @@ html {
 img, video {
   will-change: transform;
 }
+
+/* ================= PREMIUM CARD SYSTEM ================= */
+
+.gradient-border {
+  background: linear-gradient(
+    270deg,
+    #05C0E1,
+    #FF5C0B,
+    #05C0E1
+  );
+  background-size: 600% 600%;
+  animation: gradientMove 8s ease infinite;
+  border-radius: 1.25rem;
+  padding: 2px;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.premium-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 1.25rem;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(5, 192, 225, 0.25);
+}
+
+/* GPU acceleration */
+* {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, video {
+  will-change: transform;
+}

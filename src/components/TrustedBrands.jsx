@@ -152,49 +152,71 @@ const TrustedBrands = () => {
         custom={index}
         variants={fadeUp}
         className="
-          group flex flex-col items-center text-center
-          transition-all duration-500 ease-out
-          hover:-translate-y-2
+          relative group
+          h-full
         "
       >
-        {/* Icon */}
+        {/* Gradient Border Wrapper */}
         <div className="
-          mb-5
+          gradient-border
+          rounded-2xl
+          p-[2px]
           transition-all duration-500
-          group-hover:scale-110
         ">
-          <img
-            src={Icon}
-            alt={title}
-            className="
-              w-12 h-12
+          <div className="
+            bg-white/70 backdrop-blur-sm
+            rounded-2xl
+            p-8
+            h-full
+            flex flex-col justify-between
+            text-center
+            transition-all duration-500
+            group-hover:-translate-y-2
+            group-hover:shadow-[0_20px_40px_rgba(5,192,225,0.25)]
+          ">
+
+            {/* Icon */}
+            <div className="
+              mb-6 flex justify-center
               transition-all duration-500
-              group-hover:drop-shadow-[0_0_20px_rgba(5,192,225,0.6)]
-            "
-          />
+              group-hover:scale-110
+            ">
+              <img
+                src={Icon}
+                alt={title}
+                className="
+                  w-12 h-12
+                  transition-all duration-500
+                  group-hover:drop-shadow-[0_0_20px_rgba(5,192,225,0.6)]
+                "
+              />
+            </div>
+
+            {/* Title */}
+            <h4 className="
+              font-abhaya font-extrabold
+              text-[22px] md:text-[23px]
+              text-[#FF5C0B] mb-4
+              transition-colors duration-300
+              group-hover:text-primary
+            ">
+              {title}
+            </h4>
+
+            {/* Description */}
+            <p className="
+              font-abhaya font-extrabold
+              text-[16px] md:text-[17px]
+              text-[#171E67]
+              leading-relaxed
+              opacity-90
+              flex-grow
+            ">
+              {text}
+            </p>
+
+          </div>
         </div>
-
-        {/* Title */}
-        <h4 className="
-          font-abhaya font-extrabold
-          text-[22px] md:text-[23px]
-          text-[#FF5C0B] mb-3
-          transition-colors duration-300
-          group-hover:text-primary
-        ">
-          {title}
-        </h4>
-
-        {/* Description */}
-        <p className="
-          font-abhaya font-extrabold
-          text-[16px] md:text-[17px]
-          text-[#171E67]
-          leading-relaxed
-          opacity-90
-        ">
-          {text}
-        </p>
       </Motion.div>
     );
   })}
