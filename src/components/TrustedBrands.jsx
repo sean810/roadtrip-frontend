@@ -31,15 +31,16 @@ const logos = [
 ];
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 1) => ({
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
-      ease: "easeOut",
+      delay: i * 0.15,
+      duration: 0.8,
+      ease: [0.16, 1, 0.3, 1], // smoother cubic-bezier
     },
-  },
+  }),
 };
 
 const values = [
@@ -137,31 +138,67 @@ const TrustedBrands = () => {
 
         {/* Value Highlights (RESTORED SECTION) */}
         <Motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ staggerChildren: 0.15 }}
-          className="grid md:grid-cols-3 gap-12"
-        >
-          {values.map((value, index) => {
-            const { Icon, title, text } = value;
-            return (
-              <Motion.div
-                key={index}
-                variants={fadeUp}
-                className="flex flex-col items-center text-center will-change-transform"
-              >
-                <img src={Icon} alt={title} className="w-11 h-11 mb-4" />
-                <h4 className="font-abhaya font-extrabold text-[22px] md:text-[23px] text-[#FF5C0B] mb-2">
-                  {title}
-                </h4>
-                <p className="font-abhaya font-extrabold text-[16px] md:text-[17px] text-[#171E67] leading-relaxed">
-                  {text}
-                </p>
-              </Motion.div>
-            );
-          })}
-        </Motion.div>
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true, margin: "-100px" }}
+  className="grid md:grid-cols-3 gap-12"
+>
+  {values.map((value, index) => {
+    const { Icon, title, text } = value;
+
+    return (
+      <Motion.div
+        key={index}
+        custom={index}
+        variants={fadeUp}
+        className="
+          group flex flex-col items-center text-center
+          transition-all duration-500 ease-out
+          hover:-translate-y-2
+        "
+      >
+        {/* Icon */}
+        <div className="
+          mb-5
+          transition-all duration-500
+          group-hover:scale-110
+        ">
+          <img
+            src={Icon}
+            alt={title}
+            className="
+              w-12 h-12
+              transition-all duration-500
+              group-hover:drop-shadow-[0_0_20px_rgba(5,192,225,0.6)]
+            "
+          />
+        </div>
+
+        {/* Title */}
+        <h4 className="
+          font-abhaya font-extrabold
+          text-[22px] md:text-[23px]
+          text-[#FF5C0B] mb-3
+          transition-colors duration-300
+          group-hover:text-primary
+        ">
+          {title}
+        </h4>
+
+        {/* Description */}
+        <p className="
+          font-abhaya font-extrabold
+          text-[16px] md:text-[17px]
+          text-[#171E67]
+          leading-relaxed
+          opacity-90
+        ">
+          {text}
+        </p>
+      </Motion.div>
+    );
+  })}
+</Motion.div>
 
       </div>
     </section>
