@@ -5,14 +5,13 @@ import roadtrip from "../assets/logos/roadtrip.png";
 function Navbar() {
   const navigate = useNavigate();
 
-  const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
-
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return !!localStorage.getItem("userInfo");
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState(() =>
+    !!localStorage.getItem("userInfo")
+  );
 
   const [activeSection, setActiveSection] = useState("home");
+  const [overHero, setOverHero] = useState(true);
 
   const sections = [
     { label: "Home", id: "home" },
@@ -24,43 +23,52 @@ function Navbar() {
   ];
 
   useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 20);
-
-          const scrollPosition = window.scrollY + 200;
-
-          sections.forEach((section) => {
-            const element = document.getElementById(section.id);
-            if (!element) return;
-
-            if (
-              scrollPosition >= element.offsetTop &&
-              scrollPosition < element.offsetTop + element.offsetHeight
-            ) {
-              setActiveSection(section.id);
-            }
-          });
-
-          ticking = false;
-        });
-
-        ticking = true;
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
+    // Animate mount
     const timer = setTimeout(() => {
       setMounted(true);
     }, 300);
 
+    // Observe hero visibility
+    const hero = document.getElementById("home");
+    if (!hero) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setOverHero(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(hero);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
+
+  // Active section tracking
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 200;
+
+      sections.forEach((section) => {
+        const element = document.getElementById(section.id);
+        if (!element) return;
+
+        if (
+          scrollPosition >= element.offsetTop &&
+          scrollPosition < element.offsetTop + element.offsetHeight
+        ) {
+          setActiveSection(section.id);
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      clearTimeout(timer);
     };
   }, []);
 
@@ -73,20 +81,21 @@ function Navbar() {
   return (
     <nav
       className={`
-        sticky top-0 z-50 w-full
-        backdrop-blur-[6px]
-        transition-all duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)]
+        fixed top-0 left-0 z-50 w-full
+        transition-all duration-[800ms]
         ${mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"}
         ${
-          scrolled
-            ? "bg-white/15 border-b border-white/10"
-            : "bg-white/25 border-b border-white/20"
+          overHero
+            ? "backdrop-blur-lg bg-black/15 text-white"
+            : "backdrop-blur-xl bg-[#d9f1f7]/80 text-[#171E67] shadow-sm"
         }
       `}
+      style={{ transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)" }}
     >
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
-        <Link to="/">
+        {/* Logo */}
+        <Link to="/" className="transition-all duration-500 hover:scale-105">
           <img
             src={roadtrip}
             alt="RoadTrip Travel & Courier Services"
@@ -94,16 +103,26 @@ function Navbar() {
           />
         </Link>
 
-        <ul className="hidden md:flex items-center gap-10 font-inter font-bold text-[15px] text-[#171E67]">
+        {/* Nav Links */}
+        <ul className="hidden md:flex items-center gap-10 font-inter font-bold text-[15px]">
           {sections.map((item) => (
-            <li key={item.id} className="relative">
-              <a href={`#${item.id}`} className="relative px-1 py-2">
+            <li key={item.id} className="relative group">
+              <a
+                href={`#${item.id}`}
+                className="relative px-1 py-2 transition-all duration-300 hover:text-primary"
+              >
                 {item.label}
+
                 <span
                   className={`
-                    absolute left-0 -bottom-1 h-[2px] bg-primary
-                    transition-all duration-300 ease-out
-                    ${activeSection === item.id ? "w-full" : "w-0"}
+                    absolute left-0 -bottom-1 h-[3px] rounded-full
+                    bg-primary
+                    transition-all duration-500
+                    ${
+                      activeSection === item.id
+                        ? "w-full opacity-100"
+                        : "w-0 opacity-0"
+                    }
                   `}
                 />
               </a>
@@ -111,23 +130,30 @@ function Navbar() {
           ))}
         </ul>
 
-        <div className="flex items-center gap-8 font-inter font-bold">
+        {/* Auth Buttons */}
+        <div className="flex items-center gap-6 font-inter font-bold">
+
           {!isLoggedIn ? (
             <>
-              <Link to="/login" className="text-[15px] text-[#171E67]">
+              <Link
+                to="/login"
+                className="transition-all duration-300 hover:text-primary"
+              >
                 Login
               </Link>
 
               <Link
                 to="/register"
                 className="
-                  bg-primary text-white
-                  px-5 py-2.5
+                  px-6 py-2.5
                   rounded-lg
                   text-sm
-                  shadow-sm
-                  transition
-                  hover:bg-primary/90 hover:shadow-md
+                  text-white
+                  bg-primary
+                  transition-all duration-500
+                  hover:-translate-y-1
+                  hover:shadow-[0_20px_40px_rgba(255,92,11,0.55)]
+                  active:scale-95
                 "
               >
                 Sign Up
@@ -137,13 +163,15 @@ function Navbar() {
             <button
               onClick={handleLogout}
               className="
-                bg-primary text-white
-                px-5 py-2.5
+                px-6 py-2.5
                 rounded-lg
                 text-sm
-                shadow-sm
-                transition
-                hover:bg-primary/90 hover:shadow-md
+                text-white
+                bg-primary
+                transition-all duration-500
+                hover:-translate-y-1
+                hover:shadow-[0_20px_40px_rgba(255,92,11,0.55)]
+                active:scale-95
               "
             >
               Logout

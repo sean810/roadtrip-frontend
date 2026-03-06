@@ -75,6 +75,7 @@ function Services() {
     >
       <div className="max-w-7xl mx-auto px-6">
 
+        {/* Header */}
         <div
           className={`
             flex flex-col items-center text-center max-w-4xl mx-auto
@@ -91,10 +92,11 @@ function Services() {
           </h2>
 
           <p className="mt-6 max-w-3xl text-lg md:text-xl font-abhaya font-extrabold text-[#171E67]">
-           Whether you prefer driving yourself or riding with a professional, we provide flexible transport solutions designed to fit your journey across Kenya.
+            Whether you prefer driving yourself or riding with a professional, we provide flexible transport solutions designed to fit your journey across Kenya.
           </p>
         </div>
 
+        {/* Cards */}
         <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10">
           {services.map((service, index) => (
             <div
@@ -107,24 +109,64 @@ function Services() {
           ))}
         </div>
 
-        <div className="mt-16 flex justify-center">
-          <button className="
-            group inline-flex items-center gap-2
-            px-4 py-2.5 rounded-full
-            font-abhaya font-extrabold
-            text-white bg-primary
-            transition-all duration-300 ease-out
-            hover:-translate-y-1
-            hover:bg-[#ff6a1a]
-            hover:shadow-[0_10px_25px_-5px_rgba(255,92,11,0.6)]
-          ">
-            View other services
-            <ArrowRight
-              size={16}
-              className="transition-transform duration-300 group-hover:translate-x-1"
+        {/* Divider + CTA */}
+        <div
+          className={`
+            mt-16 flex flex-col items-center
+            transition-all duration-700 ease-out
+            ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+          `}
+        >
+
+          {/* Subtle divider */}
+          <div className="w-40 h-[2px] mb-10 bg-gradient-to-r from-transparent via-[#FF5C0B]/60 to-transparent" />
+
+          {/* Button */}
+          <button
+            className="
+              relative group overflow-hidden
+              inline-flex items-center gap-2
+              px-6 py-3 rounded-lg
+              font-abhaya font-extrabold
+              text-white bg-primary
+              transition-all duration-300 ease-out
+              hover:-translate-y-1.5
+              hover:shadow-[0_15px_35px_rgba(255,92,11,0.45)]
+            "
+          >
+
+            {/* Glow sweep */}
+            <span
+              className="
+                pointer-events-none
+                absolute -left-40 top-0 h-full w-40
+                bg-gradient-to-r from-transparent via-white/40 to-transparent
+                skew-x-[-25deg]
+                animate-[shine_3.5s_infinite]
+              "
             />
+
+            <span className="relative z-10 flex items-center gap-2">
+              View other services
+              <ArrowRight
+                size={18}
+                className="transition-transform duration-300 group-hover:translate-x-1.5"
+              />
+            </span>
+
           </button>
+
         </div>
+
+        <style>
+          {`
+          @keyframes shine {
+            0% { transform: translateX(-200%); }
+            60% { transform: translateX(300%); }
+            100% { transform: translateX(300%); }
+          }
+          `}
+        </style>
 
       </div>
     </section>
