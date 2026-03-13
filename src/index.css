@@ -23,10 +23,6 @@ body {
   animation-delay: 2s;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 * {
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;

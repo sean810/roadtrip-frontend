@@ -27,7 +27,11 @@ const WhyChooseUs = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="w-full py-24 bg-skybg">
+    <section
+      ref={sectionRef}
+      aria-labelledby="why-heading"
+      className="w-full py-24 bg-skybg"
+    >
       <div className="max-w-4xl mx-auto px-6">
 
         <div
@@ -40,7 +44,10 @@ const WhyChooseUs = () => {
             Why choose us
           </span>
 
-          <h2 className="text-5xl md:text-6xl font-abhaya font-extrabold text-[#FF5C0B] mb-4">
+          <h2
+            id="why-heading"
+            className="text-5xl md:text-6xl font-abhaya font-extrabold text-[#FF5C0B] mb-4"
+          >
             Why Choose RoadTrip?
           </h2>
 

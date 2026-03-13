@@ -23,12 +23,10 @@ function Navbar() {
   ];
 
   useEffect(() => {
-    // Animate mount
     const timer = setTimeout(() => {
       setMounted(true);
     }, 300);
 
-    // Observe hero visibility
     const hero = document.getElementById("home");
     if (!hero) return;
 
@@ -47,7 +45,6 @@ function Navbar() {
     };
   }, []);
 
-  // Active section tracking
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
@@ -80,6 +77,8 @@ function Navbar() {
 
   return (
     <nav
+      role="navigation"
+      aria-label="Main navigation"
       className={`
         fixed top-0 left-0 z-50 w-full
         transition-all duration-[800ms]
@@ -94,8 +93,11 @@ function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
-        {/* Logo */}
-        <Link to="/" className="transition-all duration-500 hover:scale-105">
+        <Link
+          to="/"
+          aria-label="Go to homepage"
+          className="transition-all duration-500 hover:scale-105"
+        >
           <img
             src={roadtrip}
             alt="RoadTrip Travel & Courier Services"
@@ -103,12 +105,12 @@ function Navbar() {
           />
         </Link>
 
-        {/* Nav Links */}
         <ul className="hidden md:flex items-center gap-10 font-inter font-bold text-[15px]">
           {sections.map((item) => (
             <li key={item.id} className="relative group">
               <a
                 href={`#${item.id}`}
+                aria-current={activeSection === item.id ? "page" : undefined}
                 className="relative px-1 py-2 transition-all duration-300 hover:text-primary"
               >
                 {item.label}
@@ -130,13 +132,13 @@ function Navbar() {
           ))}
         </ul>
 
-        {/* Auth Buttons */}
         <div className="flex items-center gap-6 font-inter font-bold">
 
           {!isLoggedIn ? (
             <>
               <Link
                 to="/login"
+                aria-label="Login to your account"
                 className="transition-all duration-300 hover:text-primary"
               >
                 Login
@@ -144,6 +146,7 @@ function Navbar() {
 
               <Link
                 to="/register"
+                aria-label="Create an account"
                 className="
                   px-6 py-2.5
                   rounded-lg
@@ -162,6 +165,7 @@ function Navbar() {
           ) : (
             <button
               onClick={handleLogout}
+              aria-label="Logout from your account"
               className="
                 px-6 py-2.5
                 rounded-lg

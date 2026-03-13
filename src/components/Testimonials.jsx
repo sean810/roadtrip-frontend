@@ -16,7 +16,11 @@ const fadeUp = {
 
 const Testimonials = () => {
   return (
-    <section id="testimonials" className="w-full py-24 bg-skybg">
+    <section
+      id="testimonials"
+      aria-labelledby="testimonials-heading"
+      className="w-full py-24 bg-skybg"
+    >
       <div className="max-w-7xl mx-auto px-6 text-center">
 
         <Motion.div
@@ -30,7 +34,10 @@ const Testimonials = () => {
             Testimonials
           </span>
 
-          <h2 className="text-5xl md:text-6xl font-abhaya font-extrabold text-primary mb-4">
+          <h2
+            id="testimonials-heading"
+            className="text-5xl md:text-6xl font-abhaya font-extrabold text-primary mb-4"
+          >
             Hear From Our Clients
           </h2>
 
@@ -51,19 +58,22 @@ const Testimonials = () => {
           }}
           className="grid md:grid-cols-3 gap-8"
         >
-          {[ 
+          {[
             {
-              quote: "From booking to drop-off, the experience was seamless. Everything was well organized and handled professionally.",
+              quote:
+                "From booking to drop-off, the experience was seamless. Everything was well organized and handled professionally.",
               name: "Brian M.",
               pfp: brian,
             },
             {
-              quote: "Our team needed reliable transport for meetings and events, and the service delivered every single time.",
+              quote:
+                "Our team needed reliable transport for meetings and events, and the service delivered every single time.",
               name: "Corporate Client",
               pfp: corporate,
             },
             {
-              quote: "RoadTrip made my airport transfers effortless. The car was clean, the driver was on time, and the entire experience felt smooth and professional.",
+              quote:
+                "RoadTrip made my airport transfers effortless. The car was clean, the driver was on time, and the entire experience felt smooth and professional.",
               name: "James K., Nairobi",
               pfp: james,
             },

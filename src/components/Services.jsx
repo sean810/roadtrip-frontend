@@ -7,28 +7,8 @@ import { ArrowRight } from "lucide-react";
 
 function Services() {
   const sectionRef = useRef(null);
-  const [headerVisible, setHeaderVisible] = useState(false);
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHeaderVisible(true);
-          observer.disconnect();
-        }
-      },
-      {
-        threshold: 0.25,
-        rootMargin: "0px 0px -80px",
-      }
-    );
-
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, []);
+  const [sectionVisible, setSectionVisible] = useState(false);
 
   const services = [
     {
@@ -67,10 +47,41 @@ function Services() {
     },
   ];
 
+  /* Preload images so cards appear with images already ready */
+  useEffect(() => {
+    services.forEach((service) => {
+      const img = new Image();
+      img.src = service.image;
+    });
+  }, []);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setSectionVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.2,
+        rootMargin: "0px 0px -60px",
+      }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
       id="services"
       ref={sectionRef}
+      aria-labelledby="services-heading"
       className="w-full py-28 bg-skybg"
     >
       <div className="max-w-7xl mx-auto px-6">
@@ -79,20 +90,25 @@ function Services() {
         <div
           className={`
             flex flex-col items-center text-center max-w-4xl mx-auto
-            transition-all duration-700 ease-out will-change-transform
-            ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+            transition-all duration-700 ease-out
+            ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
           `}
         >
           <span className="inline-block px-4 py-1 mb-6 text-sm rounded-full bg-pillServicesBg text-pillServicesText">
             Popular Services
           </span>
 
-          <h2 className="text-5xl md:text-6xl font-abhaya font-extrabold text-primary">
+          <h2
+            id="services-heading"
+            className="text-5xl md:text-6xl font-abhaya font-extrabold text-primary"
+          >
             Your All-In-One Transport Partner
           </h2>
 
           <p className="mt-6 max-w-3xl text-lg md:text-xl font-abhaya font-extrabold text-[#171E67]">
-            Whether you prefer driving yourself or riding with a professional, we provide flexible transport solutions designed to fit your journey across Kenya.
+            Whether you prefer driving yourself or riding with a professional,
+            we provide flexible transport solutions designed to fit your
+            journey across Kenya.
           </p>
         </div>
 
@@ -101,28 +117,32 @@ function Services() {
           {services.map((service, index) => (
             <div
               key={service.title}
-              className="will-change-transform"
-              style={{ transitionDelay: `${index * 60}ms` }}
+              className={`
+                transition-all duration-[900ms] ease-out
+                ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}
+              `}
+              style={{
+                transitionDelay: `${index * 120}ms`,
+              }}
             >
-              <ServiceCard {...service} />
+              <ServiceCard {...service} delay={index * 120} />
             </div>
           ))}
         </div>
 
-        {/* Divider + CTA */}
+        {/* CTA */}
         <div
           className={`
             mt-16 flex flex-col items-center
             transition-all duration-700 ease-out
-            ${headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+            ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
           `}
         >
 
-          {/* Subtle divider */}
           <div className="w-40 h-[2px] mb-10 bg-gradient-to-r from-transparent via-[#FF5C0B]/60 to-transparent" />
 
-          {/* Button */}
           <button
+            aria-label="View additional transport services"
             className="
               relative group overflow-hidden
               inline-flex items-center gap-2
@@ -134,8 +154,6 @@ function Services() {
               hover:shadow-[0_15px_35px_rgba(255,92,11,0.45)]
             "
           >
-
-            {/* Glow sweep */}
             <span
               className="
                 pointer-events-none

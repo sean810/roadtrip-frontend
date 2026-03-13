@@ -51,9 +51,17 @@ const childVariant = {
 
 const Footer = () => {
   return (
-    <footer className="relative mt-40">
+    <footer
+      role="contentinfo"
+      aria-label="Site footer"
+      className="relative mt-40"
+    >
 
-      <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[900px] h-[420px] bg-[radial-gradient(circle,rgba(5,192,225,0.22),transparent_70%)] blur-[90px] pointer-events-none" />
+      {/* Decorative glow */}
+      <div
+        aria-hidden="true"
+        className="absolute left-1/2 -translate-x-1/2 top-0 w-[900px] h-[420px] bg-[radial-gradient(circle,rgba(5,192,225,0.22),transparent_70%)] blur-[90px] pointer-events-none"
+      />
 
       {/* CTA */}
       <div className="max-w-6xl mx-auto px-6 relative z-10">
@@ -61,7 +69,7 @@ const Footer = () => {
           variants={ctaContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-120px" }}
+          viewport={{ once: true, amount: 0.35 }}
           className="
             relative group
             rounded-3xl
@@ -83,10 +91,11 @@ const Footer = () => {
           }}
         >
 
-          <div className="absolute top-0 left-0 w-full h-[120px] bg-gradient-to-b from-white/50 to-transparent pointer-events-none" />
-          <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(circle_at_70%_20%,rgba(255,92,11,0.25),transparent_60%)] pointer-events-none" />
+          <div aria-hidden="true" className="absolute top-0 left-0 w-full h-[120px] bg-gradient-to-b from-white/50 to-transparent" />
+          <div aria-hidden="true" className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(circle_at_70%_20%,rgba(255,92,11,0.25),transparent_60%)]" />
 
           <Motion.h2
+            id="footer-cta"
             variants={ctaItem}
             className="font-abhaya font-extrabold text-4xl md:text-5xl text-[#FF5C0B] mb-4 relative"
           >
@@ -110,6 +119,7 @@ const Footer = () => {
               href="https://wa.me/254724273784"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Contact RoadTrip on WhatsApp"
               className="
                 flex items-center justify-center gap-2
                 px-8 py-3
@@ -128,6 +138,7 @@ const Footer = () => {
 
             <a
               href="tel:+254724273784"
+              aria-label="Call RoadTrip Travel Services"
               className="
                 flex items-center justify-center gap-2
                 px-8 py-3
@@ -153,8 +164,8 @@ const Footer = () => {
       {/* Footer Surface */}
       <div className="relative rounded-t-[60px] overflow-hidden bg-gradient-to-b from-[#d9f1f7] to-[#cfe8ef] shadow-[0_-20px_60px_rgba(0,0,0,0.08)]">
 
-        {/* subtle pattern */}
         <div
+          aria-hidden="true"
           className="absolute inset-0 opacity-[0.06]"
           style={{
             backgroundImage:
@@ -171,86 +182,85 @@ const Footer = () => {
             variants={containerVariant}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-120px" }}
+            viewport={{ once: true, amount: 0.35 }}
           >
 
-            {/* Grid */}
-            <div className="grid md:grid-cols-3 gap-20 lg:gap-28 items-start justify-between mb-20">
+            <nav aria-label="Footer navigation">
+              <div className="grid md:grid-cols-3 gap-20 lg:gap-28 items-start justify-between mb-20">
 
-              {/* Brand */}
-              <Motion.div variants={childVariant}>
-                <img
-                  src={roadtrip}
-                  alt="RoadTrip Travel & Courier Services"
-                  className="h-14 w-auto mb-6 transition-transform duration-500 hover:scale-105"
-                />
+                {/* Brand */}
+                <Motion.div variants={childVariant}>
+                  <img
+                    src={roadtrip}
+                    alt="RoadTrip Travel & Courier Services logo"
+                    className="h-14 w-auto mb-6 transition-transform duration-500 hover:scale-105"
+                  />
 
-                <p className="font-abhaya font-extrabold text-[15px] text-[#171E67] leading-relaxed opacity-90">
-                  RoadTrip Travel & Courier Services delivers premium,
-                  secure and reliable mobility solutions across Kenya.
-                  From executive chauffeur services to flexible self-drive
-                  and courier solutions, we ensure every journey is seamless,
-                  safe and professionally managed.
-                </p>
-              </Motion.div>
+                  <p className="font-abhaya font-extrabold text-[15px] text-[#171E67] leading-relaxed opacity-90">
+                    RoadTrip Travel & Courier Services delivers premium,
+                    secure and reliable mobility solutions across Kenya.
+                    From executive chauffeur services to flexible self-drive
+                    and courier solutions, we ensure every journey is seamless,
+                    safe and professionally managed.
+                  </p>
+                </Motion.div>
 
-              {/* Services */}
-              <Motion.div variants={childVariant} className="text-center">
-                <h4 className="font-abhaya font-extrabold text-xl text-[#FF5C0B] mb-5">
-                  Services
-                </h4>
+                {/* Services */}
+                <Motion.div variants={childVariant} className="text-center">
+                  <h4 className="font-abhaya font-extrabold text-xl text-[#FF5C0B] mb-5">
+                    Services
+                  </h4>
 
-                <ul className="space-y-3 font-abhaya font-extrabold text-[15px] text-[#171E67]">
-                  {[
-                    "Self-Drive Car Hire",
-                    "Chauffeur Services",
-                    "Lease Hire",
-                    "Transfer Services",
-                    "Courier Services",
-                  ].map((service) => (
-                    <li
-                      key={service}
-                      className="cursor-pointer transition hover:text-[#FF5C0B]"
-                    >
-                      {service}
-                    </li>
-                  ))}
-                </ul>
-              </Motion.div>
+                  <ul className="space-y-3 font-abhaya font-extrabold text-[15px] text-[#171E67]">
+                    {[
+                      "Self-Drive Car Hire",
+                      "Chauffeur Services",
+                      "Lease Hire",
+                      "Transfer Services",
+                      "Courier Services",
+                    ].map((service) => (
+                      <li key={service} className="transition hover:text-[#FF5C0B]">
+                        {service}
+                      </li>
+                    ))}
+                  </ul>
+                </Motion.div>
 
-              {/* Contact */}
-              <Motion.div variants={childVariant}>
-                <h4 className="font-abhaya font-extrabold text-xl text-[#FF5C0B] mb-5">
-                  Contact Us
-                </h4>
+                {/* Contact */}
+                <Motion.div variants={childVariant}>
+                  <h4 className="font-abhaya font-extrabold text-xl text-[#FF5C0B] mb-5">
+                    Contact Us
+                  </h4>
 
-                <div className="space-y-5 font-abhaya font-extrabold text-[15px] text-[#171E67]">
+                  <div className="space-y-5 font-abhaya font-extrabold text-[15px] text-[#171E67]">
 
-                  <div className="flex items-start gap-3">
-                    <Phone size={18} className="text-[#FF5C0B] mt-[2px]" />
-                    <div>
-                      <div>+254 711 273 884</div>
-                      <div>+254 724 273 784</div>
-                      <div>+254 724 740 769</div>
+                    <div className="flex items-start gap-3">
+                      <Phone size={18} className="text-[#FF5C0B] mt-[2px]" />
+                      <div>
+                        <a href="tel:+254711273884">+254 711 273 884</a><br />
+                        <a href="tel:+254724273784">+254 724 273 784</a><br />
+                        <a href="tel:+254724740769">+254 724 740 769</a>
+                      </div>
                     </div>
+
+                    <div className="flex items-center gap-3">
+                      <Mail size={18} className="text-[#FF5C0B]" />
+                      <a href="mailto:roadtriptravel.courier@gmail.com">
+                        roadtriptravel.courier@gmail.com
+                      </a>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <MapPin size={18} className="text-[#FF5C0B] mt-[2px]" />
+                      <span>Hurlingham, Nairobi Kenya</span>
+                    </div>
+
                   </div>
+                </Motion.div>
 
-                  <div className="flex items-center gap-3">
-                    <Mail size={18} className="text-[#FF5C0B]" />
-                    <span>roadtriptravel.courier@gmail.com</span>
-                  </div>
+              </div>
+            </nav>
 
-                  <div className="flex items-start gap-3">
-                    <MapPin size={18} className="text-[#FF5C0B] mt-[2px]" />
-                    <span>Hurlingham, Nairobi Kenya</span>
-                  </div>
-
-                </div>
-              </Motion.div>
-
-            </div>
-
-            {/* Bottom bar */}
             <Motion.div
               variants={childVariant}
               className="border-t border-[#171E67]/20 pt-8"
