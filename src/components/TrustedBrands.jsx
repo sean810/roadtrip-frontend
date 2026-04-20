@@ -36,9 +36,9 @@ const fadeUp = {
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.15,
+      delay: i * 0.1,
       duration: 0.8,
-      ease: [0.16, 1, 0.3, 1], // smoother cubic-bezier
+      ease: [0.16, 1, 0.3, 1],
     },
   }),
 };
@@ -104,7 +104,7 @@ const TrustedBrands = () => {
           <div className="pointer-events-none absolute right-0 top-0 h-full w-16 sm:w-24 bg-gradient-to-l from-skybg to-transparent z-10" />
 
           <div className="flex w-max gap-6 sm:gap-12 animate-marquee pause-on-hover items-center will-change-transform">
-            {[...logos, ...logos].map((logo, index) => (
+            {[...logos, ...logos.slice(0, 6)].map((logo, index) => (
               <div
                 key={index}
                 className="
@@ -116,8 +116,8 @@ const TrustedBrands = () => {
                   shadow-sm
                   transition-all duration-300
                   hover:bg-white
-                  hover:shadow-[0_0_0_3px_rgba(255,153,0,0.15)]
-                  hover:ring-2 hover:ring-primary/40
+                  hover:shadow-md
+                  hover:scale-105
                 "
               >
                 <img
@@ -136,91 +136,91 @@ const TrustedBrands = () => {
           </div>
         </Motion.div>
 
-        {/* Value Highlights (RESTORED SECTION) */}
+        {/* Value Highlights */}
         <Motion.div
-  initial="hidden"
-  whileInView="visible"
-  viewport={{ once: true, margin: "-100px" }}
-  className="grid md:grid-cols-3 gap-12"
->
-  {values.map((value, index) => {
-    const { Icon, title, text } = value;
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid md:grid-cols-3 gap-12"
+        >
+          {values.map((value, index) => {
+            const { Icon, title, text } = value;
 
-    return (
-      <Motion.div
-        key={index}
-        custom={index}
-        variants={fadeUp}
-        className="
-          relative group
-          h-full
-        "
-      >
-        {/* Gradient Border Wrapper */}
-        <div className="
-          gradient-border
-          rounded-2xl
-          p-[2px]
-          transition-all duration-500
-        ">
-          <div className="
-            bg-white/70 backdrop-blur-sm
-            rounded-2xl
-            p-8
-            h-full
-            flex flex-col justify-between
-            text-center
-            transition-all duration-500
-            group-hover:-translate-y-2
-            group-hover:shadow-[0_20px_40px_rgba(5,192,225,0.25)]
-          ">
-
-            {/* Icon */}
-            <div className="
-              mb-6 flex justify-center
-              transition-all duration-500
-              group-hover:scale-110
-            ">
-              <img
-                src={Icon}
-                alt={title}
+            return (
+              <Motion.div
+                key={index}
+                custom={index}
+                variants={fadeUp}
                 className="
-                  w-12 h-12
-                  transition-all duration-500
-                  group-hover:drop-shadow-[0_0_20px_rgba(5,192,225,0.6)]
+                  relative group
+                  h-full
                 "
-              />
-            </div>
+              >
+                {/* Gradient Border Wrapper */}
+                <div className="
+                  gradient-border
+                  rounded-2xl
+                  p-[2px]
+                  transition-all duration-300
+                ">
+                  <div className="
+                    bg-white/70 backdrop-blur-sm
+                    rounded-2xl
+                    p-8
+                    h-full
+                    flex flex-col justify-between
+                    text-center
+                    transition-all duration-300
+                    group-hover:-translate-y-2
+                    group-hover:shadow-lg
+                  ">
 
-            {/* Title */}
-            <h4 className="
-              font-abhaya font-extrabold
-              text-[22px] md:text-[23px]
-              text-[#FF5C0B] mb-4
-              transition-colors duration-300
-              group-hover:text-primary
-            ">
-              {title}
-            </h4>
+                    {/* Icon */}
+                    <div className="
+                      mb-6 flex justify-center
+                      transition-all duration-300
+                      group-hover:scale-110
+                    ">
+                      <img
+                        src={Icon}
+                        alt={title}
+                        className="
+                          w-12 h-12
+                          transition-all duration-300
+                          group-hover:drop-shadow-lg
+                        "
+                      />
+                    </div>
 
-            {/* Description */}
-            <p className="
-              font-abhaya font-extrabold
-              text-[16px] md:text-[17px]
-              text-[#171E67]
-              leading-relaxed
-              opacity-90
-              flex-grow
-            ">
-              {text}
-            </p>
+                    {/* Title */}
+                    <h4 className="
+                      font-abhaya font-extrabold
+                      text-[22px] md:text-[23px]
+                      text-[#FF5C0B] mb-4
+                      transition-colors duration-300
+                      group-hover:text-primary
+                    ">
+                      {title}
+                    </h4>
 
-          </div>
-        </div>
-      </Motion.div>
-    );
-  })}
-</Motion.div>
+                    {/* Description */}
+                    <p className="
+                      font-abhaya font-extrabold
+                      text-[16px] md:text-[17px]
+                      text-[#171E67]
+                      leading-relaxed
+                      opacity-90
+                      flex-grow
+                    ">
+                      {text}
+                    </p>
+
+                  </div>
+                </div>
+              </Motion.div>
+            );
+          })}
+        </Motion.div>
 
       </div>
     </section>
@@ -228,3 +228,4 @@ const TrustedBrands = () => {
 };
 
 export default TrustedBrands;
+

@@ -193,7 +193,7 @@ const Footer = () => {
                   <img
                     src={roadtrip}
                     alt="RoadTrip Travel & Courier Services logo"
-                    className="h-14 w-auto mb-6 transition-transform duration-500 hover:scale-105"
+                    className="h-14 w-auto mb-6 transition-transform duration-300 hover:scale-[1.02] will-change-transform"
                   />
 
                   <p className="font-abhaya font-extrabold text-[15px] text-[#171E67] leading-relaxed opacity-90">
@@ -295,3 +295,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

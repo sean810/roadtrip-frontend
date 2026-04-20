@@ -11,9 +11,9 @@ function ServiceCard({ title, description, points, image }) {
             <img
               src={image}
               alt={title}
-              loading="eager"
+              loading="lazy"
               decoding="async"
-              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.025] will-change-transform"
             />
           </div>
 
@@ -49,3 +49,4 @@ function ServiceCard({ title, description, points, image }) {
 }
 
 export default ServiceCard;
+

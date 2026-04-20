@@ -1,98 +1,77 @@
-import { useEffect, useRef, useState } from "react";
+import { motion as Motion } from "framer-motion";
 import ServiceCard from "./ServiceCard";
 import chauffeurImg from "../assets/images/chauffeur.jpg";
 import selfDriveImg from "../assets/images/self-drive.jpg";
 import leaseImg from "../assets/images/lease.jpg";
 import { ArrowRight } from "lucide-react";
 
-function Services() {
-  const sectionRef = useRef(null);
-
-  const [sectionVisible, setSectionVisible] = useState(false);
-
-  const services = [
-    {
-      image: chauffeurImg,
-      title: "Chauffeur Services",
-      description:
-        "Travel comfortably while our skilled drivers get you where you need to be. Ideal for business travel, airport pickups, and special outings across Kenya.",
-      points: [
-        "Certified professional drivers",
-        "Modern, well-maintained vehicles",
-        "Fast and reliable airport transfers",
-        "Stress-free corporate and event transport",
-      ],
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.6,
+      ease: [0.16, 1, 0.3, 1],
     },
-    {
-      image: selfDriveImg,
-      title: "Self-drive rentals",
-      description:
-        "Enjoy the freedom to travel your way with our curated fleet of top-tier, impeccably maintained vehicles.",
-      points: [
-        "Wide selection from executive to luxury models",
-        "Full insurance protection included",
-        "24/7 nationwide roadside support",
-      ],
-    },
-    {
-      image: leaseImg,
-      title: "Lease vehicle services",
-      description:
-        "Skip the costs of buying and enjoy a long-term ride you can rely on.",
-      points: [
-        "Flexible lease periods",
-        "Insurance + maintenance included",
-        "Help available anytime",
-      ],
-    },
-  ];
+  }),
+};
 
-  /* Preload images so cards appear with images already ready */
-  useEffect(() => {
-    services.forEach((service) => {
-      const img = new Image();
-      img.src = service.image;
-    });
-  }, []);
+const services = [
+  {
+    image: chauffeurImg,
+    title: "Chauffeur Services",
+    description:
+      "Travel comfortably while our skilled drivers get you where you need to be. Ideal for business travel, airport pickups, and special outings across Kenya.",
+    points: [
+      "Certified professional drivers",
+      "Modern, well-maintained vehicles",
+      "Fast and reliable airport transfers",
+      "Stress-free corporate and event transport",
+    ],
+  },
+  {
+    image: selfDriveImg,
+    title: "Self-drive rentals",
+    description:
+      "Enjoy the freedom to travel your way with our curated fleet of top-tier, impeccably maintained vehicles.",
+    points: [
+      "Wide selection from executive to luxury models",
+      "Full insurance protection included",
+      "24/7 nationwide roadside support",
+    ],
+  },
+  {
+    image: leaseImg,
+    title: "Lease vehicle services",
+    description:
+      "Skip the costs of buying and enjoy a long-term ride you can rely on.",
+    points: [
+      "Flexible lease periods",
+      "Insurance + maintenance included",
+      "Help available anytime",
+    ],
+  },
+];
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setSectionVisible(true);
-          observer.disconnect();
-        }
-      },
-      {
-        threshold: 0.2,
-        rootMargin: "0px 0px -60px",
-      }
-    );
-
-    observer.observe(section);
-
-    return () => observer.disconnect();
-  }, []);
-
+const Services = () => {
   return (
     <section
       id="services"
-      ref={sectionRef}
       aria-labelledby="services-heading"
-      className="w-full py-28 bg-skybg"
+      className="w-full py-28 bg-skybg scroll-mt-20"
     >
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Header */}
-        <div
-          className={`
-            flex flex-col items-center text-center max-w-4xl mx-auto
-            transition-all duration-700 ease-out
-            ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
-          `}
+        <Motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          custom={0}
+          className="flex flex-col items-center text-center max-w-4xl mx-auto will-change-transform"
         >
           <span className="inline-block px-4 py-1 mb-6 text-sm rounded-full bg-pillServicesBg text-pillServicesText">
             Popular Services
@@ -110,33 +89,36 @@ function Services() {
             we provide flexible transport solutions designed to fit your
             journey across Kenya.
           </p>
-        </div>
+        </Motion.div>
 
         {/* Cards */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10">
+        <Motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10"
+          transition={{ staggerChildren: 0.1 }}
+        >
           {services.map((service, index) => (
-            <div
+            <Motion.div
               key={service.title}
-              className={`
-                transition-all duration-[900ms] ease-out
-                ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}
-              `}
-              style={{
-                transitionDelay: `${index * 120}ms`,
-              }}
+              variants={fadeUp}
+              custom={index}
+              className="will-change-transform"
             >
-              <ServiceCard {...service} delay={index * 120} />
-            </div>
+              <ServiceCard {...service} />
+            </Motion.div>
           ))}
-        </div>
+        </Motion.div>
 
         {/* CTA */}
-        <div
-          className={`
-            mt-16 flex flex-col items-center
-            transition-all duration-700 ease-out
-            ${sectionVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
-          `}
+        <Motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          custom={3}
+          className="mt-16 flex flex-col items-center will-change-transform"
         >
 
           <div className="w-40 h-[2px] mb-10 bg-gradient-to-r from-transparent via-[#FF5C0B]/60 to-transparent" />
@@ -160,7 +142,7 @@ function Services() {
                 absolute -left-40 top-0 h-full w-40
                 bg-gradient-to-r from-transparent via-white/40 to-transparent
                 skew-x-[-25deg]
-                animate-[shine_3.5s_infinite]
+                animate-[shine_2s_infinite]
               "
             />
 
@@ -174,21 +156,20 @@ function Services() {
 
           </button>
 
-        </div>
+        </Motion.div>
 
-        <style>
-          {`
+        <style jsx>{`
           @keyframes shine {
             0% { transform: translateX(-200%); }
             60% { transform: translateX(300%); }
             100% { transform: translateX(300%); }
           }
-          `}
-        </style>
+        `}</style>
 
       </div>
     </section>
   );
-}
+};
 
 export default Services;
+
