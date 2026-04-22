@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import heroVideo from "../assets/videos/hero-sequence.mp4";
+import { useNavigate } from "react-router-dom";
 
 function Hero() {
   const [loaded, setLoaded] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef(null);
+  const navigate = useNavigate();
 
   // Cinematic entrance delay
   useEffect(() => {
@@ -155,24 +157,24 @@ function Hero() {
               Book Now
             </button>
 
-            {/* Secondary */}
             <button
-              className="
-                px-8 py-4
-                rounded-lg
-                font-abhaya font-extrabold
-                text-white
-                border border-white/40
-                backdrop-blur-sm
-                bg-white/5
-                transition-all duration-500
-                hover:-translate-y-1
-                hover:bg-white hover:text-[#171E67]
-                active:scale-95
-              "
-            >
-              View Services
-            </button>
+  onClick={() => navigate("/services")}
+  className="
+    px-8 py-4
+    rounded-lg
+    font-abhaya font-extrabold
+    text-white
+    border border-white/40
+    backdrop-blur-sm
+    bg-white/5
+    transition-all duration-500
+    hover:-translate-y-1
+    hover:bg-white hover:text-[#171E67]
+    active:scale-95
+  "
+>
+  View Services
+</button>
           </div>
 
         </div>

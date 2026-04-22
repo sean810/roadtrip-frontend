@@ -5,6 +5,7 @@ import Hero from "../components/Hero";
 import Services from "../components/Services";
 import ErrorBoundary from "../components/ErrorBoundary";
 
+
 // Lazy loaded sections
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs"));
 const TrustedBrands = lazy(() => import("../components/TrustedBrands"));

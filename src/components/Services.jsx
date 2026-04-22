@@ -1,4 +1,5 @@
 import { motion as Motion } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // ✅ added
 import ServiceCard from "./ServiceCard";
 import chauffeurImg from "../assets/images/chauffeur.jpg";
 import selfDriveImg from "../assets/images/self-drive.jpg";
@@ -56,6 +57,8 @@ const services = [
 ];
 
 const Services = () => {
+  const navigate = useNavigate(); // ✅ added
+
   return (
     <section
       id="services"
@@ -124,6 +127,7 @@ const Services = () => {
           <div className="w-40 h-[2px] mb-10 bg-gradient-to-r from-transparent via-[#FF5C0B]/60 to-transparent" />
 
           <button
+            onClick={() => navigate("/services")} // ✅ added
             aria-label="View additional transport services"
             className="
               relative group overflow-hidden
@@ -172,4 +176,3 @@ const Services = () => {
 };
 
 export default Services;
-

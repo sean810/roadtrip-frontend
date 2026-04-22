@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import ServicesPage from "./pages/ServicesPage";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <main id="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/services" element={<ServicesPage />} />
         </Routes>
       </main>
     </>
