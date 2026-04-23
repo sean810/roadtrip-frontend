@@ -1,19 +1,20 @@
 import { motion as Motion } from "framer-motion";
-import { useNavigate } from "react-router-dom"; // ✅ added
+import { useNavigate } from "react-router-dom";
 import ServiceCard from "./ServiceCard";
 import chauffeurImg from "../assets/images/chauffeur.jpg";
 import selfDriveImg from "../assets/images/self-drive.jpg";
 import leaseImg from "../assets/images/lease.jpg";
 import { ArrowRight } from "lucide-react";
 
+// Simplified fade — no y-axis shift reduces layout recalc cost
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 20 },
   visible: (i = 1) => ({
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.1,
-      duration: 0.6,
+      delay: i * 0.08,
+      duration: 0.5,
       ease: [0.16, 1, 0.3, 1],
     },
   }),
@@ -57,7 +58,7 @@ const services = [
 ];
 
 const Services = () => {
-  const navigate = useNavigate(); // ✅ added
+  const navigate = useNavigate();
 
   return (
     <section
@@ -72,9 +73,11 @@ const Services = () => {
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          // Larger margin = animation fires earlier, before the element is
+          // in the viewport, so there's no visible pop-in during scroll
+          viewport={{ once: true, margin: "-60px" }}
           custom={0}
-          className="flex flex-col items-center text-center max-w-4xl mx-auto will-change-transform"
+          className="flex flex-col items-center text-center max-w-4xl mx-auto"
         >
           <span className="inline-block px-4 py-1 mb-6 text-sm rounded-full bg-pillServicesBg text-pillServicesText">
             Popular Services
@@ -98,16 +101,16 @@ const Services = () => {
         <Motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-60px" }}
           className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10"
-          transition={{ staggerChildren: 0.1 }}
+          transition={{ staggerChildren: 0.08 }}
         >
           {services.map((service, index) => (
             <Motion.div
               key={service.title}
               variants={fadeUp}
               custom={index}
-              className="will-change-transform"
+              // No will-change here — let the browser decide
             >
               <ServiceCard {...service} />
             </Motion.div>
@@ -119,15 +122,14 @@ const Services = () => {
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-60px" }}
           custom={3}
-          className="mt-16 flex flex-col items-center will-change-transform"
+          className="mt-16 flex flex-col items-center"
         >
-
           <div className="w-40 h-[2px] mb-10 bg-gradient-to-r from-transparent via-[#FF5C0B]/60 to-transparent" />
 
           <button
-            onClick={() => navigate("/services")} // ✅ added
+            onClick={() => navigate("/services")}
             aria-label="View additional transport services"
             className="
               relative group overflow-hidden
@@ -157,9 +159,7 @@ const Services = () => {
                 className="transition-transform duration-300 group-hover:translate-x-1.5"
               />
             </span>
-
           </button>
-
         </Motion.div>
 
         <style jsx>{`

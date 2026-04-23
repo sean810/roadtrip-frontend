@@ -6,48 +6,58 @@ const TestimonialCard = ({ quote, name, pfp }) => {
   return (
     <article
       aria-labelledby={`testimonial-${id}`}
-      className="gradient-border h-full"
+      className="
+        h-full rounded-2xl
+        border border-[rgba(23,30,103,0.12)] bg-white
+        shadow-[0_2px_12px_rgba(23,30,103,0.06)]
+        transition-shadow duration-300 ease-out
+        hover:shadow-[0_8px_32px_rgba(23,30,103,0.13)]
+        p-8 flex flex-col items-center text-center relative
+      "
     >
-      <div className="premium-card p-8 h-full flex flex-col justify-between text-center relative">
+      {/* Decorative quote mark */}
+      <span
+        aria-hidden="true"
+        className="absolute top-5 right-6 text-4xl leading-none font-abhaya font-extrabold text-primary opacity-10 select-none"
+      >
+        "
+      </span>
 
-        <span
-          aria-hidden="true"
-          className="absolute top-4 right-5 text-2xl font-bold text-black"
-        >
-          ”
-        </span>
+      {/* Accent line */}
+      <div className="w-8 h-[2px] bg-primary rounded-full mb-6 opacity-70" />
 
-        <div className="flex justify-center gap-2 mb-6" aria-hidden="true">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className="w-4 h-4 fill-yellow-400 text-yellow-400"
-            />
-          ))}
-        </div>
-
-        <div className="flex justify-center mb-6">
-          <img
-            src={pfp}
-            alt={`${name} profile`}
-            loading="lazy"
-            decoding="async"
-            className="w-14 h-14 rounded-full object-cover"
-          />
-        </div>
-
-        <p className="font-abhaya font-medium text-[#1E2A78] leading-relaxed mb-6 text-base md:text-lg flex-grow">
-          “{quote}”
-        </p>
-
-        <p
-          id={`testimonial-${id}`}
-          className="font-abhaya font-medium text-[#1E2A78]"
-        >
-          — {name}
-        </p>
-
+      {/* Stars */}
+      <div className="flex justify-center gap-1 mb-6" aria-hidden="true">
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+        ))}
       </div>
+
+      {/* Avatar */}
+      <div className="mb-6">
+        <img
+          src={pfp}
+          alt={`${name} profile`}
+          loading="lazy"
+          decoding="async"
+          width={56}
+          height={56}
+          className="w-14 h-14 rounded-full object-cover ring-2 ring-[rgba(255,92,11,0.15)]"
+        />
+      </div>
+
+      {/* Quote */}
+      <p className="font-abhaya font-medium text-[#1E2A78] leading-relaxed mb-6 text-base md:text-lg flex-grow opacity-80">
+        "{quote}"
+      </p>
+
+      {/* Name */}
+      <p
+        id={`testimonial-${id}`}
+        className="font-abhaya font-extrabold text-[#FF5C0B] text-sm tracking-wide"
+      >
+        — {name}
+      </p>
     </article>
   );
 };

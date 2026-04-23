@@ -3,49 +3,49 @@ import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import roadtrip from "../assets/logos/roadtrip.png";
 
 const ctaContainer = {
-  hidden: { opacity: 0, y: 50 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.8,
-      ease: [0.16, 1, 0.3, 1],
-      staggerChildren: 0.18,
-    },
-  },
-};
-
-const ctaItem = {
-  hidden: { opacity: 0, y: 25 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
       ease: [0.16, 1, 0.3, 1],
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const ctaItem = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1],
     },
   },
 };
 
 const containerVariant = {
-  hidden: { opacity: 0, y: 60 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 1,
+      duration: 0.6,
       ease: [0.16, 1, 0.3, 1],
-      staggerChildren: 0.18,
+      staggerChildren: 0.12,
     },
   },
 };
 
 const childVariant = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
@@ -69,21 +69,28 @@ const Footer = () => {
           variants={ctaContainer}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.35 }}
+          // FIX 1: Use margin instead of amount — fires before the element
+          // reaches the viewport so it's never mid-animation when visible.
+          // amount: 0.35 was causing re-triggers because -mb-24 made the
+          // element partially obscured, crossing the threshold on scroll.
+          viewport={{ once: true, margin: "-60px" }}
           className="
-            relative group
+            relative
             rounded-3xl
             px-10 py-12 md:px-16 md:py-16
             text-center
             backdrop-blur-xl
             border border-white/40
             shadow-[0_25px_50px_rgba(0,0,0,0.15)]
-            transition-all duration-500
-            hover:-translate-y-3
-            hover:border-primary
-            hover:shadow-[0_0_0_2px_rgba(255,92,11,0.2),0_25px_60px_-15px_rgba(255,92,11,0.45)]
             -mb-24
             overflow-hidden
+            // FIX 2: Removed hover:-translate-y-3 — CSS hover transforms on
+            // the same element Framer Motion animates cause a style conflict
+            // that produces the blink/flash. The box-shadow hover below gives
+            // a premium lift feel without touching transform.
+            transition-shadow duration-500
+            hover:border-primary
+            hover:shadow-[0_0_0_2px_rgba(255,92,11,0.2),0_25px_60px_-15px_rgba(255,92,11,0.45)]
           "
           style={{
             background:
@@ -114,7 +121,6 @@ const Footer = () => {
             variants={ctaItem}
             className="flex flex-col sm:flex-row justify-center gap-4 relative"
           >
-
             <a
               href="https://wa.me/254724273784"
               target="_blank"
@@ -155,7 +161,6 @@ const Footer = () => {
               <Phone size={18} />
               Call Now (+254 724 273 784)
             </a>
-
           </Motion.div>
 
         </Motion.div>
@@ -182,7 +187,7 @@ const Footer = () => {
             variants={containerVariant}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.35 }}
+            viewport={{ once: true, margin: "-60px" }}
           >
 
             <nav aria-label="Footer navigation">
@@ -193,7 +198,7 @@ const Footer = () => {
                   <img
                     src={roadtrip}
                     alt="RoadTrip Travel & Courier Services logo"
-                    className="h-14 w-auto mb-6 transition-transform duration-300 hover:scale-[1.02] will-change-transform"
+                    className="h-14 w-auto mb-6"
                   />
 
                   <p className="font-abhaya font-extrabold text-[15px] text-[#171E67] leading-relaxed opacity-90">
@@ -275,7 +280,6 @@ const Footer = () => {
                   <span className="cursor-pointer transition hover:text-[#FF5C0B]">
                     Privacy Policy
                   </span>
-
                   <span className="cursor-pointer transition hover:text-[#FF5C0B]">
                     Terms of Service
                   </span>
@@ -295,4 +299,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

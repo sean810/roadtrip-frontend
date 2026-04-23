@@ -30,39 +30,37 @@ const logos = [
   vka,
 ];
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.8,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  }),
-};
-
+// Moved outside component — stable reference, no re-creation on render
 const values = [
   {
     Icon: SecureIcon,
     title: "Reliable & Secure Services",
-    text:
-      "Our operations are licensed, insured, and supported by strict driver screening to ensure safety, security, and professionalism at all times.",
+    text: "Our operations are licensed, insured, and supported by strict driver screening to ensure safety, security, and professionalism at all times.",
   },
   {
     Icon: AwardIcon,
     title: "Recognized for Excellence",
-    text:
-      "Known for our strong customer support, smooth service experience, and commitment to maintaining the highest standards.",
+    text: "Known for our strong customer support, smooth service experience, and commitment to maintaining the highest standards.",
   },
   {
     Icon: TrustIcon,
     title: "Proven Reliability",
-    text:
-      "A solid history of partnering with major clients and consistently meeting expectations through reliable, well-coordinated transport services.",
+    text: "A solid history of partnering with major clients and consistently meeting expectations through reliable, well-coordinated transport services.",
   },
 ];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.08,
+      duration: 0.5,
+      ease: [0.16, 1, 0.3, 1],
+    },
+  }),
+};
 
 const TrustedBrands = () => {
   return (
@@ -74,8 +72,7 @@ const TrustedBrands = () => {
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="will-change-transform"
+          viewport={{ once: true, margin: "-60px" }}
         >
           <span className="inline-block px-4 py-1 mb-6 text-sm rounded-full bg-green-100 text-green-700">
             Trusted Partners
@@ -97,13 +94,16 @@ const TrustedBrands = () => {
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-60px" }}
           className="relative overflow-hidden mb-20"
         >
+          {/* Fade edges */}
           <div className="pointer-events-none absolute left-0 top-0 h-full w-16 sm:w-24 bg-gradient-to-r from-skybg to-transparent z-10" />
           <div className="pointer-events-none absolute right-0 top-0 h-full w-16 sm:w-24 bg-gradient-to-l from-skybg to-transparent z-10" />
 
-          <div className="flex w-max gap-6 sm:gap-12 animate-marquee pause-on-hover items-center will-change-transform">
+          {/* The marquee strip — no will-change, the browser handles
+              CSS animation compositing automatically */}
+          <div className="flex w-max gap-6 sm:gap-12 animate-marquee pause-on-hover items-center">
             {[...logos, ...logos.slice(0, 6)].map((logo, index) => (
               <div
                 key={index}
@@ -114,15 +114,16 @@ const TrustedBrands = () => {
                   rounded-xl
                   border border-gray-200
                   shadow-sm
-                  transition-all duration-300
+                  transition-shadow duration-300
                   hover:bg-white
                   hover:shadow-md
-                  hover:scale-105
                 "
               >
                 <img
                   src={logo}
                   alt="Brand logo"
+                  loading="lazy"
+                  decoding="async"
                   className="
                     h-12 sm:h-16 md:h-18 object-contain
                     opacity-40 grayscale
@@ -140,86 +141,51 @@ const TrustedBrands = () => {
         <Motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="grid md:grid-cols-3 gap-12"
+          viewport={{ once: true, margin: "-60px" }}
+          className="grid md:grid-cols-3 gap-8"
         >
-          {values.map((value, index) => {
-            const { Icon, title, text } = value;
-
-            return (
-              <Motion.div
-                key={index}
-                custom={index}
-                variants={fadeUp}
+          {values.map(({ Icon, title, text }, index) => (
+            <Motion.div
+              key={title}
+              custom={index}
+              variants={fadeUp}
+            >
+              <div
                 className="
-                  relative group
-                  h-full
+                  h-full rounded-2xl
+                  border border-[rgba(23,30,103,0.12)] bg-white
+                  shadow-[0_2px_12px_rgba(23,30,103,0.06)]
+                  transition-shadow duration-300 ease-out
+                  hover:shadow-[0_8px_32px_rgba(23,30,103,0.13)]
+                  p-8 flex flex-col items-center text-center
                 "
               >
-                {/* Gradient Border Wrapper */}
-                <div className="
-                  gradient-border
-                  rounded-2xl
-                  p-[2px]
-                  transition-all duration-300
-                ">
-                  <div className="
-                    bg-white/70 backdrop-blur-sm
-                    rounded-2xl
-                    p-8
-                    h-full
-                    flex flex-col justify-between
-                    text-center
-                    transition-all duration-300
-                    group-hover:-translate-y-2
-                    group-hover:shadow-lg
-                  ">
+                {/* Accent line */}
+                <div className="w-8 h-[2px] bg-primary rounded-full mb-6 opacity-70" />
 
-                    {/* Icon */}
-                    <div className="
-                      mb-6 flex justify-center
-                      transition-all duration-300
-                      group-hover:scale-110
-                    ">
-                      <img
-                        src={Icon}
-                        alt={title}
-                        className="
-                          w-12 h-12
-                          transition-all duration-300
-                          group-hover:drop-shadow-lg
-                        "
-                      />
-                    </div>
-
-                    {/* Title */}
-                    <h4 className="
-                      font-abhaya font-extrabold
-                      text-[22px] md:text-[23px]
-                      text-[#FF5C0B] mb-4
-                      transition-colors duration-300
-                      group-hover:text-primary
-                    ">
-                      {title}
-                    </h4>
-
-                    {/* Description */}
-                    <p className="
-                      font-abhaya font-extrabold
-                      text-[16px] md:text-[17px]
-                      text-[#171E67]
-                      leading-relaxed
-                      opacity-90
-                      flex-grow
-                    ">
-                      {text}
-                    </p>
-
-                  </div>
+                {/* Icon */}
+                <div className="mb-5 flex justify-center">
+                  <img
+                    src={Icon}
+                    alt={title}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-contain"
+                  />
                 </div>
-              </Motion.div>
-            );
-          })}
+
+                {/* Title */}
+                <h4 className="font-abhaya font-extrabold text-[22px] md:text-[23px] text-[#FF5C0B] mb-4">
+                  {title}
+                </h4>
+
+                {/* Description */}
+                <p className="font-abhaya font-extrabold text-[16px] md:text-[17px] text-[#171E67] leading-relaxed opacity-80 flex-grow">
+                  {text}
+                </p>
+              </div>
+            </Motion.div>
+          ))}
         </Motion.div>
 
       </div>
@@ -228,4 +194,3 @@ const TrustedBrands = () => {
 };
 
 export default TrustedBrands;
-
