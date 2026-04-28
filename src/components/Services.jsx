@@ -1,24 +1,38 @@
-import { motion as Motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import ServiceCard from "./ServiceCard";
 import chauffeurImg from "../assets/images/chauffeur.jpg";
 import selfDriveImg from "../assets/images/self-drive.jpg";
 import leaseImg from "../assets/images/lease.jpg";
-import { ArrowRight } from "lucide-react";
 
-// Simplified fade — no y-axis shift reduces layout recalc cost
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.08,
-      duration: 0.5,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  }),
-};
+/* ─────────────────────────────────────────
+   HOOK: IntersectionObserver reveal
+───────────────────────────────────────── */
+function useReveal(threshold = 0.15, { once = true } = {}) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          if (once) observer.disconnect();
+        } else if (!once) {
+          setVisible(false);
+        }
+      },
+      { threshold, rootMargin: "0px 0px -60px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold, once]);
+
+  return [ref, visible];
+}
 
 const services = [
   {
@@ -32,6 +46,8 @@ const services = [
       "Fast and reliable airport transfers",
       "Stress-free corporate and event transport",
     ],
+    tagline: "Sit back. We'll drive.",
+    badge: "🚘",
   },
   {
     image: selfDriveImg,
@@ -43,6 +59,8 @@ const services = [
       "Full insurance protection included",
       "24/7 nationwide roadside support",
     ],
+    tagline: "Your road, your rules.",
+    badge: "🚗",
   },
   {
     image: leaseImg,
@@ -54,125 +72,150 @@ const services = [
       "Insurance + maintenance included",
       "Help available anytime",
     ],
+    tagline: "Long-term, low-stress.",
+    badge: "💼",
   },
 ];
 
 const Services = () => {
   const navigate = useNavigate();
+  const [headerRef, headerVisible] = useReveal(0.15);
+  const [ctaRef, ctaVisible] = useReveal(0.2);
 
   return (
-    <section
-      id="services"
-      aria-labelledby="services-heading"
-      className="w-full py-28 bg-skybg scroll-mt-20"
-    >
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="relative py-24 px-6 overflow-hidden">
+      {/* Ambient orbs */}
+      <div
+        className="pointer-events-none absolute -top-32 -left-24 w-[500px] h-[500px] rounded-full opacity-20 blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(147,210,230,0.55), transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute bottom-0 -right-20 w-[420px] h-[420px] rounded-full opacity-20 blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(255,92,11,0.25), transparent 70%)" }}
+      />
 
+      <div className="relative max-w-6xl mx-auto">
         {/* Header */}
-        <Motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          // Larger margin = animation fires earlier, before the element is
-          // in the viewport, so there's no visible pop-in during scroll
-          viewport={{ once: true, margin: "-60px" }}
-          custom={0}
-          className="flex flex-col items-center text-center max-w-4xl mx-auto"
+        <div
+          ref={headerRef}
+          className={`text-center mb-16 transition-all duration-[900ms] ease-out ${
+            headerVisible ? "opacity-100 translate-y-0 blur-0" : "opacity-0 translate-y-8 blur-sm"
+          }`}
+          style={{ willChange: "opacity, transform, filter" }}
         >
-          <span className="inline-block px-4 py-1 mb-6 text-sm rounded-full bg-pillServicesBg text-pillServicesText">
+          <span
+            className="inline-block px-5 py-1.5 mb-5 rounded-full text-xs font-semibold tracking-[2px] uppercase font-inter"
+            style={{
+              background: "rgba(99,102,241,0.12)",
+              border: "1px solid rgba(99,102,241,0.2)",
+              color: "#4f46e5",
+            }}
+          >
             Popular Services
           </span>
 
           <h2
-            id="services-heading"
-            className="text-5xl md:text-6xl font-abhaya font-extrabold text-primary"
+            className="font-abhaya font-extrabold leading-[1.1]"
+            style={{
+              fontSize: "clamp(2.2rem, 4vw, 3.2rem)",
+              background: "linear-gradient(135deg, #FF5C0B 30%, #f97316 80%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
           >
             Your All-In-One Transport Partner
           </h2>
 
-          <p className="mt-6 max-w-3xl text-lg md:text-xl font-abhaya font-extrabold text-[#171E67]">
+          <div
+            className="mx-auto mt-4 h-[3px] w-12 rounded-full"
+            style={{ background: "linear-gradient(90deg, #FF5C0B, #f97316)" }}
+          />
+
+          <p className="mt-6 max-w-2xl mx-auto font-inter text-[#171E67]/80 text-base md:text-lg leading-relaxed">
             Whether you prefer driving yourself or riding with a professional,
             we provide flexible transport solutions designed to fit your
             journey across Kenya.
           </p>
-        </Motion.div>
+        </div>
 
         {/* Cards */}
-        <Motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10"
-          transition={{ staggerChildren: 0.08 }}
-        >
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => (
-            <Motion.div
-              key={service.title}
-              variants={fadeUp}
-              custom={index}
-              // No will-change here — let the browser decide
-            >
+            <RevealCard key={service.title} delay={index * 140}>
               <ServiceCard {...service} />
-            </Motion.div>
+            </RevealCard>
           ))}
-        </Motion.div>
+        </div>
 
         {/* CTA */}
-        <Motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-60px" }}
-          custom={3}
-          className="mt-16 flex flex-col items-center"
+        <div
+          ref={ctaRef}
+          className={`mt-16 flex justify-center transition-all duration-[900ms] ease-out ${
+            ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}
         >
-          <div className="w-40 h-[2px] mb-10 bg-gradient-to-r from-transparent via-[#FF5C0B]/60 to-transparent" />
-
           <button
             onClick={() => navigate("/services")}
             aria-label="View additional transport services"
             className="
               relative group overflow-hidden
               inline-flex items-center gap-2
-              px-6 py-3 rounded-lg
+              px-7 py-3.5 rounded-full
               font-abhaya font-extrabold
-              text-white bg-primary
-              transition-all duration-300 ease-out
-              hover:-translate-y-1.5
-              hover:shadow-[0_15px_35px_rgba(255,92,11,0.45)]
+              text-white
+              transition-all duration-500 ease-out
+              hover:-translate-y-1.5 hover:scale-[1.04]
             "
+            style={{
+              background: "linear-gradient(135deg, #FF5C0B 0%, #f97316 100%)",
+              boxShadow: "0 8px 24px rgba(255,92,11,0.38)",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.boxShadow = "0 18px 44px rgba(255,92,11,0.55)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.boxShadow = "0 8px 24px rgba(255,92,11,0.38)")
+            }
           >
+            {/* Shine sweep */}
             <span
-              className="
-                pointer-events-none
-                absolute -left-40 top-0 h-full w-40
-                bg-gradient-to-r from-transparent via-white/40 to-transparent
-                skew-x-[-25deg]
-                animate-[shine_2s_infinite]
-              "
+              className="absolute top-0 -left-[120%] w-[60%] h-full pointer-events-none transition-all duration-700 ease-out group-hover:left-[130%]"
+              style={{
+                background:
+                  "linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent)",
+              }}
             />
-
-            <span className="relative z-10 flex items-center gap-2">
+            <span className="relative flex items-center gap-2">
               View other services
               <ArrowRight
                 size={18}
-                className="transition-transform duration-300 group-hover:translate-x-1.5"
+                className="transition-transform duration-300 ease-out group-hover:translate-x-1.5"
               />
             </span>
           </button>
-        </Motion.div>
-
-        <style jsx>{`
-          @keyframes shine {
-            0% { transform: translateX(-200%); }
-            60% { transform: translateX(300%); }
-            100% { transform: translateX(300%); }
-          }
-        `}</style>
-
+        </div>
       </div>
     </section>
   );
 };
+
+/* Wrapper that scroll-reveals each card with stagger */
+function RevealCard({ children, delay = 0 }) {
+  const [ref, visible] = useReveal(0.12);
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-[900ms] ease-out ${
+        visible ? "opacity-100 translate-y-0 blur-0 scale-100" : "opacity-0 translate-y-10 blur-sm scale-[0.96]"
+      }`}
+      style={{
+        transitionDelay: `${delay}ms`,
+        willChange: "opacity, transform, filter",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default Services;

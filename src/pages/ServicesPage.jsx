@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Car, User, Plane, Package, Briefcase, Map } from "lucide-react";
 
@@ -12,7 +12,7 @@ import safariImg from "../assets/images/safari.jpg";
 /* ─────────────────────────────────────────
    HOOK: IntersectionObserver reveal
 ───────────────────────────────────────── */
-function useReveal(threshold = 0.15) {
+function useReveal(threshold = 0.15, { once = true } = {}) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
 
@@ -20,12 +20,19 @@ function useReveal(threshold = 0.15) {
     const el = ref.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          if (once) observer.disconnect();
+        } else if (!once) {
+          setVisible(false);
+        }
+      },
+      { threshold, rootMargin: "0px 0px -60px 0px" }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [threshold]);
+  }, [threshold, once]);
 
   return [ref, visible];
 }
@@ -38,13 +45,21 @@ function useParallax(speed = 0.08) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    let raf = 0;
     const onScroll = () => {
-      const rect = el.getBoundingClientRect();
-      const center = rect.top + rect.height / 2 - window.innerHeight / 2;
-      el.style.transform = `translateY(${center * speed}px)`;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+        el.style.transform = `translate3d(0, ${center * speed}px, 0)`;
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, [speed]);
   return ref;
 }
@@ -64,13 +79,49 @@ const STYLES = `
     --glass:  rgba(255,255,255,0.65);
     --glass-border: rgba(255,255,255,0.45);
     --ease-apple: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --font-head: 'Abhaya Libre', serif;
     --font-body: 'Inter', sans-serif;
   }
 
   html { scroll-behavior: smooth; }
-
   body { font-family: var(--font-body); }
+
+  /* ── Page-load animation ── */
+  .page-shell {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+    transition:
+      opacity 0.9s var(--ease-out-expo),
+      transform 0.9s var(--ease-out-expo),
+      filter 0.9s var(--ease-out-expo);
+    will-change: opacity, transform, filter;
+  }
+  .page-shell.loaded {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  /* Soft top-of-page splash that fades out */
+  .page-splash {
+    position: fixed; inset: 0; z-index: 2000;
+    background: linear-gradient(135deg, #eaf6fb, #cfe8ef);
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.7s var(--ease-out-expo);
+  }
+  .page-splash.hidden { opacity: 0; }
+  .splash-ring {
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,92,11,0.18);
+    border-top-color: var(--orange);
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── Floating orb background ── */
   .orb {
@@ -83,21 +134,29 @@ const STYLES = `
     100% { transform: translate(-20px, 20px) scale(0.95); }
   }
 
-  /* ── Scroll reveal base ── */
-  .reveal { opacity: 0; transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),  transform 0.7s cubic-bezier(0.16,1,0.3,1); }
-  .reveal.from-bottom { transform: translateY(52px); }
-  .reveal.from-left   { transform: translateX(-52px); }
-  .reveal.from-right  { transform: translateX(52px); }
+  /* ── Scroll reveal base (smoother, longer, with blur) ── */
+  .reveal {
+    opacity: 0;
+    filter: blur(8px);
+    transition:
+      opacity 0.9s var(--ease-out-expo),
+      transform 0.9s var(--ease-out-expo),
+      filter 0.9s var(--ease-out-expo);
+    will-change: opacity, transform, filter;
+  }
+  .reveal.from-bottom { transform: translateY(60px); }
+  .reveal.from-left   { transform: translateX(-60px); }
+  .reveal.from-right  { transform: translateX(60px); }
   .reveal.scale-up    { transform: scale(0.92); }
-  .reveal.visible     { opacity: 1 !important; transform: none !important; }
+  .reveal.visible     { opacity: 1 !important; transform: none !important; filter: blur(0) !important; }
 
   /* ── Stagger delays ── */
   .delay-0  { transition-delay: 0ms; }
-  .delay-1  { transition-delay: 100ms; }
-  .delay-2  { transition-delay: 200ms; }
-  .delay-3  { transition-delay: 300ms; }
-  .delay-4  { transition-delay: 400ms; }
-  .delay-5  { transition-delay: 500ms; }
+  .delay-1  { transition-delay: 120ms; }
+  .delay-2  { transition-delay: 220ms; }
+  .delay-3  { transition-delay: 320ms; }
+  .delay-4  { transition-delay: 420ms; }
+  .delay-5  { transition-delay: 520ms; }
 
   /* ── Overview card ── */
   .overview-card {
@@ -106,8 +165,11 @@ const STYLES = `
     -webkit-backdrop-filter: blur(18px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
-    padding: 28px 24px;
-    transition: transform 0.4s var(--ease-apple), box-shadow 0.4s var(--ease-apple), border-color 0.4s;
+    padding: 38px 32px;
+    transition:
+      transform 0.5s var(--ease-apple),
+      box-shadow 0.5s var(--ease-apple),
+      border-color 0.4s;
     box-shadow: 0 8px 32px rgba(0,0,0,0.07);
     cursor: default;
     position: relative;
@@ -119,22 +181,30 @@ const STYLES = `
     background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%);
     pointer-events: none;
   }
-  .overview-card:hover {
-    transform: translateY(-8px) scale(1.015);
-    box-shadow: 0 28px 60px rgba(23,30,103,0.14), 0 0 0 1px rgba(255,92,11,0.12);
-    border-color: rgba(255,92,11,0.2);
+  .overview-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 0%), rgba(255,92,11,0.10), transparent 55%);
+    opacity: 0; transition: opacity 0.4s var(--ease-apple);
+    pointer-events: none;
   }
+  .overview-card:hover {
+    transform: translateY(-10px) scale(1.02) rotate(-0.2deg);
+    box-shadow: 0 32px 70px rgba(23,30,103,0.18), 0 0 0 1px rgba(255,92,11,0.15);
+    border-color: rgba(255,92,11,0.25);
+  }
+  .overview-card:hover::after { opacity: 1; }
   .card-icon {
     width: 58px; height: 58px; border-radius: 16px;
     background: linear-gradient(135deg, #FF5C0B, #f97316);
     display: flex; align-items: center; justify-content: center;
     color: white; margin-bottom: 20px;
     box-shadow: 0 8px 20px rgba(255,92,11,0.35);
-    transition: transform 0.3s var(--ease-apple), box-shadow 0.3s;
+    transition: transform 0.45s var(--ease-apple), box-shadow 0.45s;
   }
   .overview-card:hover .card-icon {
-    transform: scale(1.1) rotate(-3deg);
-    box-shadow: 0 12px 28px rgba(255,92,11,0.45);
+    transform: scale(1.12) rotate(-6deg) translateY(-2px);
+    box-shadow: 0 14px 30px rgba(255,92,11,0.5);
   }
 
   /* ── Service section ── */
@@ -154,17 +224,21 @@ const STYLES = `
     position: relative; border-radius: 28px; overflow: hidden;
     height: 560px;
     box-shadow: 0 40px 100px rgba(0,0,0,0.22);
-    transition: box-shadow 0.5s var(--ease-apple);
+    transition: box-shadow 0.6s var(--ease-apple), transform 0.6s var(--ease-apple);
   }
-  .img-frame:hover { box-shadow: 0 56px 120px rgba(0,0,0,0.28); }
+  .img-frame:hover {
+    box-shadow: 0 60px 130px rgba(0,0,0,0.3);
+    transform: translateY(-6px);
+  }
   .img-frame img {
     width: 100%; height: 118%; object-fit: cover;
     display: block; will-change: transform;
-    transition: transform 0.1s linear;
+    transition: transform 0.8s var(--ease-apple);
   }
+  .img-frame:hover img { transform: translate3d(0, 0, 0) scale(1.06); }
   .img-glow {
     position: absolute; inset: -2px; border-radius: 26px;
-    transition: opacity 0.4s;
+    transition: opacity 0.5s;
     opacity: 0; z-index: -1;
   }
   .img-frame:hover + .img-glow, .img-group:hover .img-glow { opacity: 1; }
@@ -173,9 +247,10 @@ const STYLES = `
     background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
     border-radius: 10px; padding: 8px 10px;
     font-size: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    transition: transform 0.3s var(--ease-apple);
+    transition: transform 0.4s var(--ease-apple);
+    z-index: 2;
   }
-  .img-frame:hover .img-badge { transform: scale(1.12) rotate(5deg); }
+  .img-frame:hover .img-badge { transform: scale(1.18) rotate(8deg); }
 
   /* ── Service content ── */
   .service-label { font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #6366f1; }
@@ -186,14 +261,26 @@ const STYLES = `
     background: var(--glass); backdrop-filter: blur(14px);
     border: 1px solid var(--glass-border); border-radius: 16px;
     padding: 22px 24px; margin-bottom: 26px;
+    transition: transform 0.4s var(--ease-apple), box-shadow 0.4s, border-color 0.4s;
+  }
+  .why-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(23,30,103,0.10);
+    border-color: rgba(255,92,11,0.22);
   }
   .why-box h4 { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 10px; }
   .why-box p  { font-family: var(--font-body); font-size: 15px; color: rgba(23,30,103,0.78); line-height: 1.75; }
 
   .expect-title { font-family: var(--font-head); font-size: 20px; font-weight: 800; color: var(--orange); margin-bottom: 14px; }
   .expect-list  { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 34px; }
-  .expect-list li { display: flex; align-items: flex-start; gap: 10px; font-family: var(--font-body); font-size: 15.5px; color: var(--navy); line-height: 1.6; }
-  .check { color: #22c55e; font-size: 17px; flex-shrink: 0; margin-top: 2px; }
+  .expect-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-family: var(--font-body); font-size: 15.5px; color: var(--navy); line-height: 1.6;
+    transition: transform 0.3s var(--ease-apple), color 0.3s;
+  }
+  .expect-list li:hover { transform: translateX(4px); color: #0f1147; }
+  .check { color: #22c55e; font-size: 17px; flex-shrink: 0; margin-top: 2px; transition: transform 0.3s var(--ease-apple); }
+  .expect-list li:hover .check { transform: scale(1.25); }
 
   .book-btn {
     display: inline-flex; align-items: center; gap: 8px;
@@ -202,15 +289,24 @@ const STYLES = `
     color: white; font-family: var(--font-body); font-weight: 600;
     font-size: 14px; letter-spacing: 0.3px;
     box-shadow: 0 8px 24px rgba(255,92,11,0.38);
-    transition: transform 0.3s var(--ease-apple), box-shadow 0.3s, background 0.3s;
+    transition: transform 0.35s var(--ease-apple), box-shadow 0.35s, background 0.3s;
+    position: relative; overflow: hidden;
   }
+  .book-btn::before {
+    content: '';
+    position: absolute; top: 0; left: -120%;
+    width: 60%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+    transition: left 0.7s var(--ease-out-expo);
+  }
+  .book-btn:hover::before { left: 130%; }
   .book-btn:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 16px 40px rgba(255,92,11,0.45);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 18px 44px rgba(255,92,11,0.5);
     background: linear-gradient(135deg, #e84e00 0%, #FF5C0B 100%);
   }
-  .book-btn .arrow { transition: transform 0.3s var(--ease-apple); }
-  .book-btn:hover .arrow { transform: translateX(4px); }
+  .book-btn .arrow { transition: transform 0.35s var(--ease-apple); }
+  .book-btn:hover .arrow { transform: translateX(6px); }
 
   /* ── Hero ── */
   .hero-pill {
@@ -252,8 +348,6 @@ const STYLES = `
     100% { background-position: 60px 60px; }
   }
 
-  /* ── Overview card sizing ── */
-  .overview-card { padding: 38px 32px; }
   .section-num {
     font-family: var(--font-body);
     font-size: 11px; font-weight: 600; letter-spacing: 2px;
@@ -266,10 +360,20 @@ const STYLES = `
     display: inline-flex; align-items: center; gap: 5px;
     font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--orange);
     text-decoration: none; transition: gap 0.3s, opacity 0.3s;
+    position: relative;
   }
+  .card-link::after {
+    content: '';
+    position: absolute; left: 0; bottom: -3px;
+    height: 2px; width: 100%;
+    background: var(--orange);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s var(--ease-out-expo);
+  }
+  .card-link:hover::after { transform: scaleX(1); }
   .card-link:hover { gap: 9px; }
-  .card-link .arrow { transition: transform 0.3s var(--ease-apple); }
-  .card-link:hover .arrow { transform: translateX(3px); }
+  .card-link .arrow { transition: transform 0.35s var(--ease-apple); }
+  .card-link:hover .arrow { transform: translateX(4px); }
 
   /* ── Popular badge on overview card ── */
   .popular-badge {
@@ -280,6 +384,7 @@ const STYLES = `
     padding: 4px 10px; border-radius: 50px;
     box-shadow: 0 4px 12px rgba(255,92,11,0.4);
     animation: badgePulse 2.5s ease-in-out infinite;
+    z-index: 2;
   }
   @keyframes badgePulse {
     0%, 100% { box-shadow: 0 4px 12px rgba(255,92,11,0.4); }
@@ -291,18 +396,18 @@ const STYLES = `
     position: absolute; inset: 0; border-radius: 28px;
     background: linear-gradient(to top, rgba(23,30,103,0.82) 0%, rgba(23,30,103,0.1) 55%, transparent 100%);
     display: flex; align-items: flex-end; padding: 28px;
-    opacity: 0; transition: opacity 0.4s var(--ease-apple);
+    opacity: 0; transition: opacity 0.5s var(--ease-apple);
     pointer-events: none;
   }
   .img-frame:hover .img-overlay { opacity: 1; }
   .img-overlay-text {
     font-family: var(--font-head); font-size: 22px; font-weight: 800;
     color: white; line-height: 1.2;
-    transform: translateY(10px); transition: transform 0.4s var(--ease-apple);
+    transform: translateY(14px); transition: transform 0.5s var(--ease-out-expo);
   }
   .img-frame:hover .img-overlay-text { transform: translateY(0); }
 
-  /* ── Modal backdrop ── */
+  /* ── Modal ── */
   .modal-backdrop {
     position: fixed; inset: 0; z-index: 1000;
     background: rgba(10,12,40,0.6); backdrop-filter: blur(10px);
@@ -311,8 +416,6 @@ const STYLES = `
     animation: fadeIn 0.25s var(--ease-apple);
   }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-  /* ── Modal box ── */
   .modal-box {
     background: linear-gradient(145deg, #f0f8fc, #e4f1f8);
     border: 1px solid rgba(255,255,255,0.7);
@@ -320,22 +423,19 @@ const STYLES = `
     width: 100%; max-width: 480px;
     box-shadow: 0 40px 100px rgba(0,0,0,0.25);
     position: relative;
-    animation: slideUp 0.35s var(--ease-apple);
+    animation: slideUp 0.4s var(--ease-out-expo);
   }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-
+  @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
   .modal-close {
     position: absolute; top: 16px; right: 16px;
     background: rgba(23,30,103,0.08); border: none; border-radius: 50%;
     width: 36px; height: 36px; cursor: pointer; font-size: 18px;
     display: flex; align-items: center; justify-content: center;
-    color: var(--navy); transition: background 0.2s;
+    color: var(--navy); transition: background 0.25s, transform 0.25s, color 0.25s;
   }
-  .modal-close:hover { background: rgba(255,92,11,0.12); color: var(--orange); }
+  .modal-close:hover { background: rgba(255,92,11,0.12); color: var(--orange); transform: rotate(90deg); }
 
-  .modal-service-label { font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #6366f1; margin-bottom: 6px; }
   .modal-title { font-family: var(--font-head); font-size: 26px; font-weight: 800; color: var(--orange); margin-bottom: 24px; line-height: 1.1; }
-
   .modal-field { margin-bottom: 16px; }
   .modal-label { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--navy); opacity: 0.7; letter-spacing: 0.5px; margin-bottom: 6px; display: block; text-transform: uppercase; }
   .modal-input, .modal-select, .modal-textarea {
@@ -351,7 +451,6 @@ const STYLES = `
   }
   .modal-textarea { resize: none; height: 80px; }
   .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
   .modal-submit {
     width: 100%; margin-top: 8px;
     padding: 14px; border-radius: 50px; border: none; cursor: pointer;
@@ -361,6 +460,13 @@ const STYLES = `
     transition: transform 0.3s var(--ease-apple), box-shadow 0.3s;
   }
   .modal-submit:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(255,92,11,0.45); }
+
+  /* Honor reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .page-shell { transition: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+    .page-shell { opacity: 1 !important; transform: none !important; filter: none !important; }
+  }
 `;
 
 function StyleInjector() {
@@ -382,21 +488,21 @@ function BookingModal({ service, onClose }) {
   if (!service) return null;
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-box" onClick={e => e.stopPropagation()}>
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>✕</button>
-        <p className="modal-service-label">Book Now</p>
-        <h2 className="modal-title">{service.title}</h2>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", color: "#6366f1", marginBottom: 6 }}>
+          Book Now
+        </p>
+        <h3 className="modal-title">{service.title}</h3>
 
         <div className="modal-field">
           <label className="modal-label">Full Name</label>
-          <input className="modal-input" type="text" placeholder="e.g. John Kamau" />
+          <input className="modal-input" type="text" placeholder="Your name" />
         </div>
-
         <div className="modal-field">
           <label className="modal-label">Phone Number</label>
-          <input className="modal-input" type="tel" placeholder="+254 700 000 000" />
+          <input className="modal-input" type="tel" placeholder="+254 ..." />
         </div>
-
         <div className="modal-row">
           <div className="modal-field">
             <label className="modal-label">Date</label>
@@ -407,10 +513,9 @@ function BookingModal({ service, onClose }) {
             <input className="modal-input" type="time" />
           </div>
         </div>
-
         <div className="modal-field">
           <label className="modal-label">Additional Notes</label>
-          <textarea className="modal-textarea modal-input" placeholder="Pick-up location, special requests…" />
+          <textarea className="modal-textarea" placeholder="Anything we should know..." />
         </div>
 
         <button className="modal-submit">Confirm Booking →</button>
@@ -424,9 +529,16 @@ function BookingModal({ service, onClose }) {
 ───────────────────────────────────────── */
 function OverviewCard({ icon: Icon, title, description, href, delay, popular }) {
   const [ref, visible] = useReveal(0.1);
+  const handleMove = (e) => {
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  };
   return (
     <div
       ref={ref}
+      onMouseMove={handleMove}
       className={`overview-card reveal from-bottom delay-${delay} ${visible ? "visible" : ""}`}
     >
       {popular && <span className="popular-badge">⭐ Most Booked</span>}
@@ -444,7 +556,7 @@ function OverviewCard({ icon: Icon, title, description, href, delay, popular }) 
    PARALLAX IMAGE
 ───────────────────────────────────────── */
 function ParallaxImg({ src, alt, glow, badge, tagline }) {
-  const imgRef = useParallax(0.07);
+  const imgRef = useParallax(0.05);
   return (
     <div style={{ position: "relative" }}>
       <div className="img-frame">
@@ -466,8 +578,8 @@ function ParallaxImg({ src, alt, glow, badge, tagline }) {
    SERVICE SECTION
 ───────────────────────────────────────── */
 function ServiceSection({ id, num, title, desc, whyText, bullets, img, alt, glow, badge, imgRight, tagline }) {
-  const [contentRef, contentVisible] = useReveal(0.1);
-  const [imgRef, imgVisible] = useReveal(0.1);
+  const [contentRef, contentVisible] = useReveal(0.12);
+  const [imgRef, imgVisible] = useReveal(0.12);
   const [modalOpen, setModalOpen] = useState(false);
 
   const content = (
@@ -500,7 +612,7 @@ function ServiceSection({ id, num, title, desc, whyText, bullets, img, alt, glow
   const image = (
     <div
       ref={imgRef}
-      className={`reveal ${imgRight ? "from-right" : "from-left"} ${imgVisible ? "visible" : ""}`}
+      className={`reveal scale-up ${imgVisible ? "visible" : ""}`}
     >
       <ParallaxImg src={img} alt={alt} glow={glow} badge={badge} tagline={tagline} />
     </div>
@@ -520,7 +632,30 @@ function ServiceSection({ id, num, title, desc, whyText, bullets, img, alt, glow
    MAIN PAGE
 ───────────────────────────────────────── */
 function ServicesPage() {
+  const [pageLoaded, setPageLoaded] = useState(false);
+  const [splashHidden, setSplashHidden] = useState(false);
   const [heroRef, heroVisible] = useReveal(0.05);
+
+  // Always start at the top when this page mounts (e.g. navigating from Home).
+  useLayoutEffect(() => {
+    // Disable browser scroll restoration for this navigation
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Trigger page-load animation after mount (next frame so transition runs).
+  useEffect(() => {
+    const r1 = requestAnimationFrame(() => setPageLoaded(true));
+    const t = setTimeout(() => setSplashHidden(true), 650);
+    const t2 = setTimeout(() => setSplashHidden((v) => v), 1400);
+    return () => {
+      cancelAnimationFrame(r1);
+      clearTimeout(t);
+      clearTimeout(t2);
+    };
+  }, []);
 
   const overview = [
     { icon: User,     title: "Chauffeur Service",          description: "Experience luxury and professionalism with our premium chauffeur service.",       href: "#service-chauffeur", popular: true  },
@@ -598,13 +733,21 @@ function ServicesPage() {
     <>
       <StyleInjector />
 
+      {/* Splash overlay during initial mount */}
+      <div className={`page-splash ${splashHidden ? "hidden" : ""}`} aria-hidden="true">
+        <div className="splash-ring" />
+      </div>
+
       {/* Fixed ambient background */}
       <div className="grid-bg" />
       <div className="orb" style={{ width: 500, height: 500, top: "5%", left: "-10%", background: "radial-gradient(circle, rgba(147,210,230,0.35), transparent 70%)" }} />
       <div className="orb" style={{ width: 400, height: 400, top: "30%", right: "-8%", background: "radial-gradient(circle, rgba(99,102,241,0.14), transparent 70%)", animationDelay: "6s" }} />
       <div className="orb" style={{ width: 350, height: 350, bottom: "15%", left: "20%", background: "radial-gradient(circle, rgba(174,221,234,0.28), transparent 70%)", animationDelay: "12s" }} />
 
-      <div style={{ position: "relative", zIndex: 1, minHeight: "100vh", background: "linear-gradient(to bottom, #eaf6fb 0%, #dff1f7 50%, #cfe8ef 100%)" }}>
+      <div
+        className={`page-shell ${pageLoaded ? "loaded" : ""}`}
+        style={{ position: "relative", zIndex: 1, minHeight: "100vh", background: "linear-gradient(to bottom, #eaf6fb 0%, #dff1f7 50%, #cfe8ef 100%)" }}
+      >
         <Navbar />
 
         {/* ── HERO ── */}

@@ -1,299 +1,397 @@
-import { motion as Motion } from "framer-motion";
+// Footer.jsx
+import { useEffect, useRef, useState } from "react";
 import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import roadtrip from "../assets/logos/roadtrip.png";
 
-const ctaContainer = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.16, 1, 0.3, 1],
-      staggerChildren: 0.12,
-    },
-  },
-};
+/* Reveal hook (matches the rest of the site) */
+function useReveal(threshold = 0.15, { once = true } = {}) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
 
-const ctaItem = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-};
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          if (once) observer.disconnect();
+        } else if (!once) {
+          setVisible(false);
+        }
+      },
+      { threshold, rootMargin: "0px 0px -60px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [threshold, once]);
 
-const containerVariant = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: [0.16, 1, 0.3, 1],
-      staggerChildren: 0.12,
-    },
-  },
-};
+  return [ref, visible];
+}
 
-const childVariant = {
-  hidden: { opacity: 0, y: 16 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+const services = [
+  "Self-Drive Car Hire",
+  "Chauffeur Services",
+  "Lease Hire",
+  "Transfer Services",
+  "Courier Services",
+];
+
+const phones = ["+254 711 273 884", "+254 724 273 784", "+254 724 740 769"];
 
 const Footer = () => {
-  return (
-    <footer
-      role="contentinfo"
-      aria-label="Site footer"
-      className="relative mt-40"
-    >
+  const ctaCardRef = useRef(null);
+  const [ctaRef, ctaVisible] = useReveal(0.15);
+  const [footerRef, footerVisible] = useReveal(0.1);
 
-      {/* Decorative glow */}
+  const handleMove = (e) => {
+    const el = ctaCardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  };
+
+  return (
+    <footer className="relative w-full overflow-hidden bg-skybg">
+      {/* Ambient orbs */}
       <div
-        aria-hidden="true"
-        className="absolute left-1/2 -translate-x-1/2 top-0 w-[900px] h-[420px] bg-[radial-gradient(circle,rgba(5,192,225,0.22),transparent_70%)] blur-[90px] pointer-events-none"
+        className="pointer-events-none absolute -top-40 -left-24 w-[520px] h-[520px] rounded-full opacity-25 blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(255,92,11,0.20), transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute top-1/3 -right-32 w-[460px] h-[460px] rounded-full opacity-25 blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%)" }}
       />
 
       {/* CTA */}
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <Motion.div
-          variants={ctaContainer}
-          initial="hidden"
-          whileInView="visible"
-          // FIX 1: Use margin instead of amount — fires before the element
-          // reaches the viewport so it's never mid-animation when visible.
-          // amount: 0.35 was causing re-triggers because -mb-24 made the
-          // element partially obscured, crossing the threshold on scroll.
-          viewport={{ once: true, margin: "-60px" }}
-          className="
-            relative
-            rounded-3xl
-            px-10 py-12 md:px-16 md:py-16
-            text-center
-            backdrop-blur-xl
-            border border-white/40
-            shadow-[0_25px_50px_rgba(0,0,0,0.15)]
-            -mb-24
-            overflow-hidden
-            // FIX 2: Removed hover:-translate-y-3 — CSS hover transforms on
-            // the same element Framer Motion animates cause a style conflict
-            // that produces the blink/flash. The box-shadow hover below gives
-            // a premium lift feel without touching transform.
-            transition-shadow duration-500
-            hover:border-primary
-            hover:shadow-[0_0_0_2px_rgba(255,92,11,0.2),0_25px_60px_-15px_rgba(255,92,11,0.45)]
-          "
-          style={{
-            background:
-              "linear-gradient(140deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.6) 45%, rgba(217,241,247,0.65) 100%)",
-          }}
+      <div className="relative max-w-7xl mx-auto px-6 pt-24 pb-16">
+        <div
+          ref={ctaRef}
+          className={`transition-all duration-[900ms] will-change-[opacity,transform,filter] ${
+            ctaVisible
+              ? "opacity-100 translate-y-0 blur-0 scale-100"
+              : "opacity-0 translate-y-10 blur-sm scale-[0.97]"
+          }`}
+          style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
         >
-
-          <div aria-hidden="true" className="absolute top-0 left-0 w-full h-[120px] bg-gradient-to-b from-white/50 to-transparent" />
-          <div aria-hidden="true" className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(circle_at_70%_20%,rgba(255,92,11,0.25),transparent_60%)]" />
-
-          <Motion.h2
-            id="footer-cta"
-            variants={ctaItem}
-            className="font-abhaya font-extrabold text-4xl md:text-5xl text-[#FF5C0B] mb-4 relative"
+          <div
+            ref={ctaCardRef}
+            onMouseMove={handleMove}
+            className="
+              group relative overflow-hidden rounded-3xl border
+              p-10 md:p-14 text-center
+              transition-all duration-500
+              hover:-translate-y-1
+            "
+            style={{
+              background: "rgba(255,255,255,0.72)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)",
+              borderColor: "rgba(255,255,255,0.6)",
+              boxShadow: "0 8px 32px rgba(23,30,103,0.08)",
+              transitionTimingFunction: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow =
+                "0 32px 70px rgba(23,30,103,0.18), 0 0 0 1px rgba(255,92,11,0.2)";
+              e.currentTarget.style.borderColor = "rgba(255,92,11,0.28)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = "0 8px 32px rgba(23,30,103,0.08)";
+              e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
+            }}
           >
-            Ready for Your Next Journey?
-          </Motion.h2>
+            {/* Top sheen */}
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%)",
+              }}
+            />
+            {/* Mouse-tracked glow */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              style={{
+                background:
+                  "radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,92,11,0.14), transparent 55%)",
+              }}
+            />
+            {/* Diagonal shine */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden">
+              <span
+                className="absolute top-0 -left-[120%] w-[55%] h-full transition-all duration-[900ms] group-hover:left-[140%]"
+                style={{
+                  background:
+                    "linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent)",
+                  transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+              />
+            </div>
 
-          <Motion.p
-            variants={ctaItem}
-            className="max-w-2xl mx-auto font-abhaya text-lg md:text-xl text-[#171E67]/80 mb-10 relative"
-          >
-            Experience reliable travel across Kenya with RoadTrip.
-            Reach out instantly through WhatsApp or give us a call to plan your journey.
-          </Motion.p>
+            {/* Accent line */}
+            <div
+              className="relative mx-auto w-10 h-[2px] rounded-full mb-6 opacity-80 transition-all duration-500 group-hover:w-16"
+              style={{ background: "linear-gradient(90deg, #FF5C0B, #f97316)" }}
+            />
 
-          <Motion.div
-            variants={ctaItem}
-            className="flex flex-col sm:flex-row justify-center gap-4 relative"
-          >
-            <a
-              href="https://wa.me/254724273784"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Contact RoadTrip on WhatsApp"
-              className="
-                flex items-center justify-center gap-2
-                px-8 py-3
-                rounded-lg
-                bg-primary text-white
-                font-abhaya font-extrabold
-                transition-all duration-300
-                hover:-translate-y-1
-                hover:shadow-[0_15px_35px_rgba(255,92,11,0.45)]
-                active:scale-95
-              "
+            <h3
+              className="relative font-abhaya font-extrabold leading-[1.05] mb-4"
+              style={{
+                fontSize: "clamp(2.6rem, 5vw, 4.5rem)",
+                background: "linear-gradient(135deg, #FF5C0B 30%, #f97316 80%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
             >
-              <MessageCircle size={18} />
-              WhatsApp Us
-            </a>
+              Ready for Your Next Journey?
+            </h3>
 
-            <a
-              href="tel:+254724273784"
-              aria-label="Call RoadTrip Travel Services"
-              className="
-                flex items-center justify-center gap-2
-                px-8 py-3
-                rounded-lg
-                border border-[#171E67]/30
-                text-[#171E67]
-                font-abhaya font-extrabold
-                transition-all duration-300
-                hover:-translate-y-1
-                hover:bg-[#171E67] hover:text-white
-                active:scale-95
-              "
-            >
-              <Phone size={18} />
-              Call Now (+254 724 273 784)
-            </a>
-          </Motion.div>
+            <p className="relative max-w-2xl mx-auto font-abhaya font-extrabold text-[17px] md:text-[18px] text-[#171E67]/85 leading-relaxed mb-8">
+              Experience reliable travel across Kenya with RoadTrip. Reach out
+              instantly through WhatsApp or give us a call to plan your journey.
+            </p>
 
-        </Motion.div>
+            <div className="relative flex flex-wrap justify-center gap-4">
+              <a
+                href="https://wa.me/254724273784"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+                  group/btn inline-flex items-center gap-2 px-7 py-3 rounded-full
+                  font-abhaya font-extrabold text-white text-[16px]
+                  transition-all duration-300 hover:-translate-y-0.5
+                "
+                style={{
+                  background: "linear-gradient(135deg, #22c55e, #16a34a)",
+                  boxShadow: "0 10px 24px rgba(34,197,94,0.35)",
+                }}
+              >
+                <MessageCircle className="w-5 h-5" />
+                WhatsApp Us
+              </a>
+
+              <a
+                href="tel:+254724273784"
+                className="
+                  group/btn inline-flex items-center gap-2 px-7 py-3 rounded-full
+                  font-abhaya font-extrabold text-white text-[16px]
+                  transition-all duration-300 hover:-translate-y-0.5
+                "
+                style={{
+                  background: "linear-gradient(135deg, #FF5C0B, #f97316)",
+                  boxShadow: "0 10px 24px rgba(255,92,11,0.35)",
+                }}
+              >
+                <Phone className="w-5 h-5" />
+                Call Now (+254 724 273 784)
+              </a>
+            </div>
+
+            {/* Bottom accent bar */}
+            <div
+              className="absolute bottom-0 left-0 h-[3px] w-0 transition-all duration-700 ease-out group-hover:w-full"
+              style={{
+                background: "linear-gradient(90deg, #FF5C0B, #f97316)",
+                transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Footer Surface */}
-      <div className="relative rounded-t-[60px] overflow-hidden bg-gradient-to-b from-[#d9f1f7] to-[#cfe8ef] shadow-[0_-20px_60px_rgba(0,0,0,0.08)]">
+      <div
+        ref={footerRef}
+        className={`relative transition-all duration-[900ms] ${
+          footerVisible
+            ? "opacity-100 translate-y-0 blur-0"
+            : "opacity-0 translate-y-8 blur-sm"
+        }`}
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(23,30,103,0.02) 0%, rgba(23,30,103,0.06) 100%)",
+          transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+        }}
+      >
+        <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-10">
+          <div className="grid md:grid-cols-3 gap-12">
+            {/* Brand */}
+            <div>
+              <img
+                src={roadtrip}
+                alt="RoadTrip Travel & Courier Services"
+                className="h-14 w-auto mb-5"
+              />
+              <p className="font-abhaya font-extrabold text-[16px] md:text-[17px] text-[#171E67]/85 leading-relaxed">
+                RoadTrip Travel & Courier Services delivers premium, secure and
+                reliable mobility solutions across Kenya. From executive
+                chauffeur services to flexible self-drive and courier solutions,
+                we ensure every journey is seamless, safe and professionally
+                managed.
+              </p>
+            </div>
 
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, #171E67 1px, transparent 0)",
-            backgroundSize: "28px 28px",
-          }}
-        />
+            {/* Services */}
+            <div>
+              <h4
+                className="font-abhaya font-extrabold mb-5 text-[22px]"
+                style={{
+                  background: "linear-gradient(135deg, #FF5C0B, #f97316)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Services
+              </h4>
+              <div
+                className="w-8 h-[2px] rounded-full mb-5 opacity-80"
+                style={{ background: "linear-gradient(90deg, #FF5C0B, #f97316)" }}
+              />
+              <ul className="space-y-3">
+                {services.map((service) => (
+                  <li key={service}>
+                    <a
+                      href="#services"
+                      className="
+                        group inline-flex items-center gap-2
+                        font-abhaya font-extrabold text-[16px] text-[#171E67]/80
+                        transition-all duration-300
+                        hover:text-[#FF5C0B] hover:translate-x-1
+                      "
+                    >
+                      <span
+                        className="inline-block w-1.5 h-1.5 rounded-full transition-all duration-300 group-hover:w-4"
+                        style={{ background: "linear-gradient(90deg, #FF5C0B, #f97316)" }}
+                      />
+                      {service}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#FF5C0B]/40 to-transparent" />
+            {/* Contact */}
+            <div>
+              <h4
+                className="font-abhaya font-extrabold mb-5 text-[22px]"
+                style={{
+                  background: "linear-gradient(135deg, #FF5C0B, #f97316)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Contact Us
+              </h4>
+              <div
+                className="w-8 h-[2px] rounded-full mb-5 opacity-80"
+                style={{ background: "linear-gradient(90deg, #FF5C0B, #f97316)" }}
+              />
 
-        <div className="relative max-w-[1400px] mx-auto px-6 pt-40 pb-14">
-
-          <Motion.div
-            variants={containerVariant}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-          >
-
-            <nav aria-label="Footer navigation">
-              <div className="grid md:grid-cols-3 gap-20 lg:gap-28 items-start justify-between mb-20">
-
-                {/* Brand */}
-                <Motion.div variants={childVariant}>
-                  <img
-                    src={roadtrip}
-                    alt="RoadTrip Travel & Courier Services logo"
-                    className="h-14 w-auto mb-6"
-                  />
-
-                  <p className="font-abhaya font-extrabold text-[15px] text-[#171E67] leading-relaxed opacity-90">
-                    RoadTrip Travel & Courier Services delivers premium,
-                    secure and reliable mobility solutions across Kenya.
-                    From executive chauffeur services to flexible self-drive
-                    and courier solutions, we ensure every journey is seamless,
-                    safe and professionally managed.
-                  </p>
-                </Motion.div>
-
-                {/* Services */}
-                <Motion.div variants={childVariant} className="text-center">
-                  <h4 className="font-abhaya font-extrabold text-xl text-[#FF5C0B] mb-5">
-                    Services
-                  </h4>
-
-                  <ul className="space-y-3 font-abhaya font-extrabold text-[15px] text-[#171E67]">
-                    {[
-                      "Self-Drive Car Hire",
-                      "Chauffeur Services",
-                      "Lease Hire",
-                      "Transfer Services",
-                      "Courier Services",
-                    ].map((service) => (
-                      <li key={service} className="transition hover:text-[#FF5C0B]">
-                        {service}
-                      </li>
-                    ))}
-                  </ul>
-                </Motion.div>
-
-                {/* Contact */}
-                <Motion.div variants={childVariant}>
-                  <h4 className="font-abhaya font-extrabold text-xl text-[#FF5C0B] mb-5">
-                    Contact Us
-                  </h4>
-
-                  <div className="space-y-5 font-abhaya font-extrabold text-[15px] text-[#171E67]">
-
-                    <div className="flex items-start gap-3">
-                      <Phone size={18} className="text-[#FF5C0B] mt-[2px]" />
-                      <div>
-                        <a href="tel:+254711273884">+254 711 273 884</a><br />
-                        <a href="tel:+254724273784">+254 724 273 784</a><br />
-                        <a href="tel:+254724740769">+254 724 740 769</a>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <Mail size={18} className="text-[#FF5C0B]" />
-                      <a href="mailto:roadtriptravel.courier@gmail.com">
-                        roadtriptravel.courier@gmail.com
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3 group">
+                  <span
+                    className="
+                      mt-0.5 flex items-center justify-center w-9 h-9 rounded-xl shrink-0
+                      transition-all duration-500
+                      group-hover:scale-110 group-hover:-rotate-6
+                    "
+                    style={{
+                      background: "linear-gradient(135deg, #FFF6EE, #FFE5D2)",
+                      boxShadow: "0 6px 16px rgba(255,92,11,0.18)",
+                    }}
+                  >
+                    <Phone className="w-4 h-4 text-[#FF5C0B]" />
+                  </span>
+                  <div className="font-abhaya font-extrabold text-[16px] text-[#171E67]/85 leading-relaxed">
+                    {phones.map((p) => (
+                      <a
+                        key={p}
+                        href={`tel:${p.replace(/\s+/g, "")}`}
+                        className="block transition-colors duration-300 hover:text-[#FF5C0B]"
+                      >
+                        {p}
                       </a>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <MapPin size={18} className="text-[#FF5C0B] mt-[2px]" />
-                      <span>Hurlingham, Nairobi Kenya</span>
-                    </div>
-
+                    ))}
                   </div>
-                </Motion.div>
+                </li>
 
-              </div>
-            </nav>
-
-            <Motion.div
-              variants={childVariant}
-              className="border-t border-[#171E67]/20 pt-8"
-            >
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-
-                <p className="font-abhaya font-extrabold text-sm text-[#171E67] opacity-90">
-                  © {new Date().getFullYear()} RoadTrip Travel & Courier Services. All rights reserved.
-                </p>
-
-                <div className="flex gap-6 font-abhaya font-extrabold text-sm text-[#171E67]">
-                  <span className="cursor-pointer transition hover:text-[#FF5C0B]">
-                    Privacy Policy
+                <li className="flex items-start gap-3 group">
+                  <span
+                    className="
+                      mt-0.5 flex items-center justify-center w-9 h-9 rounded-xl shrink-0
+                      transition-all duration-500
+                      group-hover:scale-110 group-hover:-rotate-6
+                    "
+                    style={{
+                      background: "linear-gradient(135deg, #FFF6EE, #FFE5D2)",
+                      boxShadow: "0 6px 16px rgba(255,92,11,0.18)",
+                    }}
+                  >
+                    <Mail className="w-4 h-4 text-[#FF5C0B]" />
                   </span>
-                  <span className="cursor-pointer transition hover:text-[#FF5C0B]">
-                    Terms of Service
+                  <a
+                    href="mailto:roadtriptravel.courier@gmail.com"
+                    className="font-abhaya font-extrabold text-[16px] text-[#171E67]/85 leading-relaxed transition-colors duration-300 hover:text-[#FF5C0B] break-all"
+                  >
+                    roadtriptravel.courier@gmail.com
+                  </a>
+                </li>
+
+                <li className="flex items-start gap-3 group">
+                  <span
+                    className="
+                      mt-0.5 flex items-center justify-center w-9 h-9 rounded-xl shrink-0
+                      transition-all duration-500
+                      group-hover:scale-110 group-hover:-rotate-6
+                    "
+                    style={{
+                      background: "linear-gradient(135deg, #FFF6EE, #FFE5D2)",
+                      boxShadow: "0 6px 16px rgba(255,92,11,0.18)",
+                    }}
+                  >
+                    <MapPin className="w-4 h-4 text-[#FF5C0B]" />
                   </span>
-                </div>
+                  <span className="font-abhaya font-extrabold text-[16px] text-[#171E67]/85 leading-relaxed">
+                    Hurlingham, Nairobi Kenya
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
 
-              </div>
-            </Motion.div>
+          {/* Divider */}
+          <div
+            className="my-10 h-px w-full"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(23,30,103,0.18), transparent)",
+            }}
+          />
 
-          </Motion.div>
-
+          {/* Bottom row */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="font-abhaya font-extrabold text-[14px] text-[#171E67]/70 text-center md:text-left">
+              © {new Date().getFullYear()} RoadTrip Travel & Courier Services. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              <a
+                href="#"
+                className="font-abhaya font-extrabold text-[14px] text-[#171E67]/70 transition-colors duration-300 hover:text-[#FF5C0B]"
+              >
+                Privacy Policy
+              </a>
+              <a
+                href="#"
+                className="font-abhaya font-extrabold text-[14px] text-[#171E67]/70 transition-colors duration-300 hover:text-[#FF5C0B]"
+              >
+                Terms of Service
+              </a>
+            </div>
+          </div>
         </div>
-
       </div>
-
     </footer>
   );
 };
