@@ -19,11 +19,6 @@ const HERO_STYLES = `
     50%      { transform: translate(1%, -2%); }
     75%      { transform: translate(-1%, -1%); }
   }
-  @keyframes hero-light-sweep {
-    0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
-    40%  { opacity: 0.55; }
-    100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
-  }
   @keyframes hero-float-slow {
     0%, 100% { transform: translateY(0) scale(1); }
     50%      { transform: translateY(-18px) scale(1.04); }
@@ -67,13 +62,6 @@ const HERO_STYLES = `
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>");
     mix-blend-mode: overlay;
     animation: hero-grain 8s steps(6) infinite;
-  }
-
-  .hero-shine {
-    position: absolute; top: 0; left: 0; height: 100%; width: 35%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
-    pointer-events: none;
-    animation: hero-light-sweep 6s ease-in-out 1.8s infinite;
   }
 
   .hero-orb {
@@ -200,7 +188,7 @@ function Hero() {
   }, []);
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-black">
+    <section id="home" className="relative w-full h-screen overflow-hidden bg-black">
       <HeroStyleInjector />
 
       {/* Splash loader */}
@@ -275,7 +263,6 @@ function Hero() {
             {/* Heading — single inline flow so words stay on one baseline */}
             <h1 className="hero-heading">
               Where Every Trip<span className="accent">Fits You</span>
-              <span className="hero-shine" />
             </h1>
 
             {/* Paragraph */}

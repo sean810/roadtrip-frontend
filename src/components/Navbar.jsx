@@ -10,11 +10,6 @@ const NAV_STYLES = `
     0%, 100% { filter: drop-shadow(0 0 0 rgba(255,92,11,0)); }
     50%      { filter: drop-shadow(0 0 12px rgba(255,92,11,0.45)); }
   }
-  @keyframes nav-link-shine {
-    0%   { transform: translateX(-120%); opacity: 0; }
-    50%  { opacity: 1; }
-    100% { transform: translateX(160%); opacity: 0; }
-  }
   @keyframes nav-cta-pulse {
     0%, 100% { box-shadow: 0 8px 22px rgba(255,92,11,0.35); }
     50%      { box-shadow: 0 12px 32px rgba(255,92,11,0.55); }
@@ -45,23 +40,13 @@ const NAV_STYLES = `
     animation: nav-logo-glow 1.6s ease-in-out infinite;
   }
 
-  /* ── Link with underline + shimmer ── */
+  /* ── Link with underline ── */
   .nav-link {
     position: relative; overflow: hidden;
     transition: color 0.35s cubic-bezier(0.16,1,0.3,1),
                 transform 0.35s cubic-bezier(0.16,1,0.3,1);
   }
   .nav-link:hover { transform: translateY(-2px); }
-  .nav-link::before {
-    content: ''; position: absolute; top: 0; left: 0;
-    width: 40%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,92,11,0.25), transparent);
-    transform: translateX(-150%);
-    pointer-events: none;
-  }
-  .nav-link:hover::before {
-    animation: nav-link-shine 0.9s cubic-bezier(0.16,1,0.3,1);
-  }
   .nav-underline {
     position: absolute; left: 0; bottom: -4px; height: 3px;
     border-radius: 2px;
@@ -115,12 +100,15 @@ const NAV_STYLES = `
 function NavStyleInjector() {
   useEffect(() => {
     if (document.getElementById("nav-styles")) return;
+
     const tag = document.createElement("style");
     tag.id = "nav-styles";
     tag.textContent = NAV_STYLES;
     document.head.appendChild(tag);
+
     return () => tag.remove();
   }, []);
+
   return null;
 }
 
@@ -133,13 +121,15 @@ function Navbar() {
   const [activeSection, setActiveSection] = useState("");
 
   const isHome = location.pathname === "/";
+  const isAbout = location.pathname === "/about";
+  const isServices = location.pathname === "/services";
 
   const sections = [
-    { label: "Home", id: "home", type: "scroll" },
-    { label: "About Us", id: "about", type: "scroll" },
-    { label: "Services", id: "services", type: "route" },
-    { label: "Partners", id: "partners", type: "scroll" },
-    { label: "Testimonials", id: "testimonials", type: "scroll" },
+    { label: "Home", id: "home", type: "scroll", path: "/" },
+    { label: "About Us", id: "about", type: "route", path: "/about" },
+    { label: "Services", id: "services", type: "route", path: "/services" },
+    { label: "Partners", id: "partners", type: "scroll", path: "/" },
+    { label: "Testimonials", id: "testimonials", type: "scroll", path: "/" },
   ];
 
   /* Mount animation */
@@ -148,22 +138,27 @@ function Navbar() {
     return () => clearTimeout(timer);
   }, []);
 
-  /* Hero detection ONLY on homepage */
-  useEffect(() => {
-    if (!isHome) {
-      setOverHero(false);
-      return;
-    }
-    const hero = document.getElementById("home");
-    if (!hero) return;
+useEffect(() => {
+  let rafId;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setOverHero(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
-    observer.observe(hero);
-    return () => observer.disconnect();
-  }, [isHome]);
+  const update = () => {
+    const hero =
+      document.getElementById("home") ||
+      document.getElementById("about-hero") ||
+      document.getElementById("services-hero");
+
+    if (hero) {
+      const rect = hero.getBoundingClientRect();
+      setOverHero(rect.bottom > 80);
+    }
+
+    rafId = requestAnimationFrame(update);
+  };
+
+  update();
+
+  return () => cancelAnimationFrame(rafId);
+}, [location.pathname]);
 
   /* Scroll tracking ONLY on homepage */
   useEffect(() => {
@@ -171,12 +166,16 @@ function Navbar() {
       setActiveSection("");
       return;
     }
+
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
+
       sections.forEach((section) => {
         if (section.type !== "scroll") return;
+
         const element = document.getElementById(section.id);
         if (!element) return;
+
         if (
           scrollPosition >= element.offsetTop &&
           scrollPosition < element.offsetTop + element.offsetHeight
@@ -185,26 +184,53 @@ function Navbar() {
         }
       });
     };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHome]);
 
-  /* Handle logo / route nav -> always go to top */
-  const goHome = (e) => {
-    e.preventDefault();
-    if (isHome) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      navigate("/");
-      window.scrollTo(0, 0);
+  /* Detect and scroll to hash on home page (handles cross-page links) */
+  useEffect(() => {
+    if (isHome && location.hash) {
+      const id = location.hash.replace("#", "");
+      // Wait for the home page components to mount properly
+      const timer = setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
     }
+  }, [isHome, location.hash]);
+
+  /* Handle logo / home nav -> always go to top */
+  const goHome = (e) => {
+    if (!isHome) return; // Let Link handle navigation if not on Home
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const goServices = (e) => {
+  const goRouteTop = (path) => (e) => {
     e.preventDefault();
-    navigate("/services");
-    // ensure top of services page
+
+    if (location.pathname === path) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    navigate(path);
     requestAnimationFrame(() => window.scrollTo(0, 0));
+  };
+
+  const goHomeSection = (sectionId) => (e) => {
+    // If we're already home, just let the standard anchor behavior or scroll tracking handle it
+    if (isHome) return;
+    
+    // From other pages, the Link's 'to' prop (e.g. /#partners) handles navigation.
+    // Our cross-page hash useEffect will handle the scrolling once we arrive.
   };
 
   return (
@@ -214,7 +240,7 @@ function Navbar() {
         fixed top-0 left-0 z-50 w-full
         ${mounted ? "is-ready" : "is-loading"}
         ${
-          overHero && isHome
+          overHero
             ? "backdrop-blur-lg bg-black/15 text-white"
             : "backdrop-blur-xl bg-[#d9f1f7]/80 text-[#171E67] shadow-sm"
         }
@@ -224,7 +250,11 @@ function Navbar() {
 
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" onClick={goHome} className={`nav-logo nav-item ${mounted ? "is-ready" : ""} delay-0`}>
+        <Link
+          to="/"
+          onClick={goHome}
+          className={`nav-logo nav-item ${mounted ? "is-ready" : ""} delay-0`}
+        >
           <img
             src={roadtrip}
             alt="RoadTrip Travel & Courier Services"
@@ -235,7 +265,11 @@ function Navbar() {
         {/* Links */}
         <ul className="hidden md:flex items-center gap-10 font-inter font-bold text-[15px]">
           {sections.map((item, i) => {
-            const isActive = activeSection === item.id;
+            const isActive =
+              activeSection === item.id ||
+              (item.id === "about" && isAbout) ||
+              (item.id === "services" && isServices);
+
             const linkInner = (
               <>
                 {item.label}
@@ -255,13 +289,24 @@ function Navbar() {
                 className={`nav-item ${mounted ? "is-ready" : ""} delay-${Math.min(i + 1, 5)}`}
               >
                 {item.type === "scroll" && isHome ? (
-                  <a href={`#${item.id}`} className="nav-link relative px-1 py-2 hover:text-primary inline-block">
+                  <a
+                    href={`#${item.id}`}
+                    className="nav-link relative px-1 py-2 hover:text-primary inline-block"
+                  >
                     {linkInner}
                   </a>
+                ) : item.type === "scroll" ? (
+                  <Link
+                    to={`/#${item.id}`}
+                    onClick={goHomeSection(item.id)}
+                    className="nav-link relative px-1 py-2 hover:text-primary inline-block"
+                  >
+                    {linkInner}
+                  </Link>
                 ) : (
                   <Link
-                    to={item.id === "services" ? "/services" : "/"}
-                    onClick={item.id === "services" ? goServices : goHome}
+                    to={item.path}
+                    onClick={goRouteTop(item.path)}
                     className="nav-link relative px-1 py-2 hover:text-primary inline-block"
                   >
                     {linkInner}
@@ -273,11 +318,15 @@ function Navbar() {
         </ul>
 
         {/* CTA */}
-        <div className={`nav-item ${mounted ? "is-ready" : ""} delay-5 flex items-center gap-6 font-inter font-bold`}>
+        <div
+          className={`nav-item ${
+            mounted ? "is-ready" : ""
+          } delay-5 flex items-center gap-6 font-inter font-bold`}
+        >
           <Link
             to="/services"
-            onClick={goServices}
-            className="nav-cta px-6 py-2.5 rounded-lg text-sm text-white active:scale-95"
+            onClick={goRouteTop("/services")}
+            className="nav-cta px-6 py-2 rounded-lg text-sm text-white active:scale-95"
           >
             Book Now
           </Link>

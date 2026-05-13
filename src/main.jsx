@@ -5,11 +5,18 @@ import Lenis from "@studio-freight/lenis";
 import App from "./App";
 import "./index.css";
 
-// Initialize smooth scrolling
 const lenis = new Lenis({
   duration: 1.1,
   smooth: true,
   smoothTouch: false,
+});
+
+// ✅ expose globally
+window.lenis = lenis;
+
+// ✅ FORCE Lenis to emit scroll updates
+lenis.on("scroll", () => {
+  // This ensures scroll events propagate properly
 });
 
 // Animation frame loop

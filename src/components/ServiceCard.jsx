@@ -4,13 +4,19 @@ import { useRef } from "react";
 function ServiceCard({ title, description, points, image, tagline, badge }) {
   const cardRef = useRef(null);
 
-  // Mouse-tracked glow (matches ServicesPage overview-card)
+  // Optimized Mouse-tracked glow
   const handleMove = (e) => {
     const el = cardRef.current;
     if (!el) return;
-    const rect = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+    
+    // Use requestAnimationFrame to sync with the screen refresh rate
+    requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      el.style.setProperty("--mx", `${x}px`);
+      el.style.setProperty("--my", `${y}px`);
+    });
   };
 
   return (
@@ -26,8 +32,8 @@ function ServiceCard({ title, description, points, image, tagline, badge }) {
         "
         style={{
           background: "rgba(255,255,255,0.72)",
-          backdropFilter: "blur(18px)",
-          WebkitBackdropFilter: "blur(18px)",
+          backdropFilter: "blur(4px)",
+          WebkitBackdropFilter: "blur(4px)",
           boxShadow: "0 8px 32px rgba(23,30,103,0.07)",
           transitionTimingFunction: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
@@ -63,8 +69,8 @@ function ServiceCard({ title, description, points, image, tagline, badge }) {
           <img
             src={image}
             alt={title}
-            loading="lazy"
-            decoding="async"
+            loading="eager"
+            decoding="sync"
             width={480}
             height={208}
             className="

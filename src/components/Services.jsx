@@ -83,7 +83,7 @@ const Services = () => {
   const [ctaRef, ctaVisible] = useReveal(0.2);
 
   return (
-    <section className="relative py-24 px-6 overflow-hidden">
+    <section className="relative py-24 px-6 overflow-hidden" style={{ contain: 'layout' }}>
       {/* Ambient orbs */}
       <div
         className="pointer-events-none absolute -top-32 -left-24 w-[500px] h-[500px] rounded-full opacity-20 blur-3xl"
@@ -98,10 +98,13 @@ const Services = () => {
         {/* Header */}
         <div
           ref={headerRef}
-          className={`text-center mb-16 transition-all duration-[900ms] ease-out ${
-            headerVisible ? "opacity-100 translate-y-0 blur-0" : "opacity-0 translate-y-8 blur-sm"
+         className={`text-center mb-16 transition-all duration-[900ms] ease-out ${
+            //  className={`text-center mb-16 transition-all duration-[900ms] ease-out ${
+            headerVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-10 scale-[0.96]"
           }`}
-          style={{ willChange: "opacity, transform, filter" }}
+          style={{
+             willChange: "opacity, transform,"
+          }}
         >
           <span
             className="inline-block px-5 py-1.5 mb-5 rounded-full text-xs font-semibold tracking-[2px] uppercase font-inter"
@@ -205,12 +208,12 @@ function RevealCard({ children, delay = 0 }) {
   return (
     <div
       ref={ref}
-      className={`transition-all duration-[900ms] ease-out ${
-        visible ? "opacity-100 translate-y-0 blur-0 scale-100" : "opacity-0 translate-y-10 blur-sm scale-[0.96]"
+      className={`transition-all duration-[800ms] ease-out ${
+        visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-[0.98]"
       }`}
       style={{
         transitionDelay: `${delay}ms`,
-        willChange: "opacity, transform, filter",
+        willChange: "opacity, transform", // Removed 'filter' from will-change
       }}
     >
       {children}

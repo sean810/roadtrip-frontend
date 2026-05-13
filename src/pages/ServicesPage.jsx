@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Car, User, Plane, Package, Briefcase, Map } from "lucide-react";
 
+
 import chauffeurImg from "../assets/images/Chauffeur1.jpg";
 import selfDriveImg from "../assets/images/Self-drive1.jpg";
 import airportImg from "../assets/images/airport.jpg";
@@ -37,30 +38,30 @@ function useReveal(threshold = 0.15, { once = true } = {}) {
   return [ref, visible];
 }
 
-/* ─────────────────────────────────────────
-   HOOK: Parallax on scroll
-───────────────────────────────────────── */
 function useParallax(speed = 0.08) {
   const ref = useRef(null);
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const rect = el.getBoundingClientRect();
-        const center = rect.top + rect.height / 2 - window.innerHeight / 2;
-        el.style.transform = `translate3d(0, ${center * speed}px, 0)`;
-      });
+
+    let rafId;
+
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const center =
+        rect.top + rect.height / 2 - window.innerHeight / 2;
+
+      el.style.transform = `translate3d(0, ${center * speed}px, 0)`;
+
+      rafId = requestAnimationFrame(update);
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
+
+    update();
+
+    return () => cancelAnimationFrame(rafId);
   }, [speed]);
+
   return ref;
 }
 
@@ -137,7 +138,6 @@ const STYLES = `
   /* ── Scroll reveal base (smoother, longer, with blur) ── */
   .reveal {
     opacity: 0;
-    filter: blur(8px);
     transition:
       opacity 0.9s var(--ease-out-expo),
       transform 0.9s var(--ease-out-expo),
@@ -743,15 +743,18 @@ function ServicesPage() {
       <div className="orb" style={{ width: 500, height: 500, top: "5%", left: "-10%", background: "radial-gradient(circle, rgba(147,210,230,0.35), transparent 70%)" }} />
       <div className="orb" style={{ width: 400, height: 400, top: "30%", right: "-8%", background: "radial-gradient(circle, rgba(99,102,241,0.14), transparent 70%)", animationDelay: "6s" }} />
       <div className="orb" style={{ width: 350, height: 350, bottom: "15%", left: "20%", background: "radial-gradient(circle, rgba(174,221,234,0.28), transparent 70%)", animationDelay: "12s" }} />
-
+      
+      <Navbar />
       <div
         className={`page-shell ${pageLoaded ? "loaded" : ""}`}
         style={{ position: "relative", zIndex: 1, minHeight: "100vh", background: "linear-gradient(to bottom, #eaf6fb 0%, #dff1f7 50%, #cfe8ef 100%)" }}
       >
-        <Navbar />
 
         {/* ── HERO ── */}
-        <div style={{ paddingTop: 140, paddingBottom: 80, textAlign: "center", padding: "140px 24px 80px" }}>
+        <div
+  id="services-hero"
+  style={{ paddingTop: 140, paddingBottom: 80, textAlign: "center", padding: "140px 24px 80px" }}
+>
           <div
             ref={heroRef}
             className={`reveal from-bottom ${heroVisible ? "visible" : ""}`}
