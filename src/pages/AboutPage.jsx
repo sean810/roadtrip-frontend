@@ -636,7 +636,7 @@ const ABOUT_STYLES = `
     width: 250px;
     pointer-events: none;
     z-index: 5;
-    transition: transform 0.4s var(--ease-apple);
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .design-value-item.pos-top .design-content { left: 130px; top: 50%; transform: translateY(-50%); text-align: left; }
@@ -648,22 +648,45 @@ const ABOUT_STYLES = `
   .design-value-item.pos-left .design-content { top: 125px; left: 50%; transform: translateX(-50%); text-align: center; }
   .design-value-item.pos-top-left .design-content { right: 115px; top: 50%; transform: translateY(-50%); text-align: right; }
 
+  /* Focused state - move content outward on hover */
+  .design-value-item.focused.pos-top .design-content { transform: translateY(-50%) translateX(20px); }
+  .design-value-item.focused.pos-top-right .design-content { transform: translateY(-50%) translateX(25px); }
+  .design-value-item.focused.pos-right .design-content { transform: translateX(-50%) translateY(35px); }
+  .design-value-item.focused.pos-bottom-right .design-content { transform: translateY(-50%) translateX(25px); }
+  .design-value-item.focused.pos-bottom .design-content { transform: translateY(-50%) translateX(-20px); }
+  .design-value-item.focused.pos-bottom-left .design-content { transform: translateY(-50%) translateX(-25px); }
+  .design-value-item.focused.pos-left .design-content { transform: translateX(-50%) translateY(-35px); }
+  .design-value-item.focused.pos-top-left .design-content { transform: translateY(-50%) translateX(-25px); }
+
   .design-value-title {
     font-family: var(--font-body);
     font-size: 15px;
     font-weight: 600;
-    color: var(--orange);
-    margin-bottom: 4px;
+    color: var(--color);
+    margin-bottom: 6px;
     display: block;
     line-height: 1.2;
+    transition: font-size 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), text-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .design-value-item.focused .design-value-title {
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(var(--color), 0.3);
   }
 
   .design-value-desc {
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: 13.5px;
     color: var(--navy);
-    line-height: 1.4;
-    opacity: 0.85;
+    line-height: 1.5;
+    opacity: 0.9;
+    transition: font-size 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .design-value-item.focused .design-value-desc {
+    font-size: 14px;
+    opacity: 1;
+    color: rgba(23, 30, 103, 0.95);
   }
 
   @media (max-width: 1000px) {
@@ -758,12 +781,65 @@ const ABOUT_STYLES = `
 
 /* Orb hover upgrade */
 .design-orb {
-  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .design-orb:hover {
   transform: scale(1.18) translateY(-6px);
   box-shadow: 0 20px 50px var(--glow);
+}
+
+/* Interactive Hover Orbit Effect */
+.values-circular-layout {
+  position: relative;
+}
+
+.design-value-item {
+  transition: opacity 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.design-value-item.dimmed {
+  opacity: 0.3;
+  filter: grayscale(0.8);
+}
+
+.design-value-item.focused {
+  z-index: 20;
+}
+
+.design-value-item.focused .design-orb {
+  transform: scale(1.25) translateY(-8px);
+  filter: drop-shadow(0 0 20px var(--glow));
+}
+
+.design-value-item.rotate-away {
+  transform: rotate(calc(var(--rotation-offset, 0deg))) scale(0.92);
+}
+
+/* Center logo reacts to hover */
+.values-circular-layout:has(.design-value-item:hover) .center-logo-box {
+  filter: brightness(1.1);
+  transition: filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.center-logo-box {
+  transition: filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Connector lines react to hovered item */
+.values-circular-layout:has(.design-value-item:hover) .connectors-svg path {
+  opacity: 0.25;
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), stroke 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.connectors-svg path {
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), stroke 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.design-value-item:hover ~ .connectors-svg path:nth-child(var(--connector-index, 0)),
+.design-value-item.focused ~ .connectors-svg path:nth-child(var(--connector-index, 0)) {
+  opacity: 1;
+  stroke-width: 4;
 }
 
 /* Center glow pulse */
@@ -929,6 +1005,7 @@ import {
 function AboutPage() {
   const [pageLoaded, setPageLoaded] = useState(false);
   const [splashHidden, setSplashHidden] = useState(false);
+  const [hoveredValueIndex, setHoveredValueIndex] = useState(null);
 
   const heroImageRef = useParallax(0.06);
   const ctaImageRef = useParallax(0.05);
@@ -966,7 +1043,7 @@ function AboutPage() {
 
   const stats = [
     { value: "500+", label: "Happy Clients" },
-    { value: "10K+", label: "Trips Completed" },
+    { value: "1K+", label: "Trips Completed" },
     { value: "24/7", label: "Customer Support" },
   ];
 
@@ -1287,11 +1364,17 @@ function AboutPage() {
                 </div>
               </div>
 
-              {coreValues.map((v) => (
+              {coreValues.map((v, index) => (
                 <div
                   key={v.title}
-                  className={`design-value-item ${v.posClass}`}
+                  className={`design-value-item ${v.posClass} ${
+                    hoveredValueIndex === index ? "focused" : ""
+                  } ${
+                    hoveredValueIndex !== null && hoveredValueIndex !== index ? "dimmed" : ""
+                  }`}
                   style={{ "--angle": `${v.angle}deg`, "--color": v.color, "--glow": v.glow }}
+                  onMouseEnter={() => setHoveredValueIndex(index)}
+                  onMouseLeave={() => setHoveredValueIndex(null)}
                 >
                   <div className="design-orb">
                     <v.icon />

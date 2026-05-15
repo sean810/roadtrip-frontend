@@ -198,7 +198,7 @@ function ValueCard({ Icon, title, text, visible, delay }) {
 
 const TrustedBrands = () => {
   const [headerRef, headerVisible] = useReveal(0.2);
-  const [marqueeRef, marqueeVisible] = useReveal(0.1);
+  const [marqueeRef, marqueeVisible] = useReveal(0.1, { once: false });
   const [cardsRef, cardsVisible] = useReveal(0.1);
 
   return (
