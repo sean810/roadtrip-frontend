@@ -47,7 +47,6 @@ const services = [
       "Stress-free corporate and event transport",
     ],
     tagline: "Sit back. We'll drive.",
-    badge: "🚘",
   },
   {
     image: selfDriveImg,
@@ -60,7 +59,6 @@ const services = [
       "24/7 nationwide roadside support",
     ],
     tagline: "Your road, your rules.",
-    badge: "🚗",
   },
   {
     image: leaseImg,
@@ -73,7 +71,6 @@ const services = [
       "Help available anytime",
     ],
     tagline: "Long-term, low-stress.",
-    badge: "💼",
   },
 ];
 
@@ -111,7 +108,7 @@ const Services = () => {
             style={{
               background: "rgba(99,102,241,0.12)",
               border: "1px solid rgba(99,102,241,0.2)",
-              color: "#4f46e5",
+              color: "#6366f1",
             }}
           >
             Popular Services

@@ -170,10 +170,25 @@ function Hero() {
     if (!video) return;
 
     const handleLoaded = () => setVideoLoaded(true);
-    video.addEventListener("loadeddata", handleLoaded);
+
+    // FIX 1: If the browser already has the video cached (readyState >= 3),
+    // loadeddata will never fire again — so mark it loaded immediately.
+   if (video.readyState >= 3) {
+  requestAnimationFrame(() => {
+    setVideoLoaded(true);
+  });
+} else {
+      // FIX 2: Listen to both loadeddata and canplay as a fallback,
+      // so we catch whichever fires first across different browsers/cache states.
+      video.addEventListener("loadeddata", handleLoaded);
+      video.addEventListener("canplay", handleLoaded);
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        // FIX 3: IntersectionObserver is the sole controller of play/pause.
+        // autoPlay attribute removed from the element to avoid conflicts
+        // with the browser's autoplay policy on repeated navigations.
         if (entry.isIntersecting) video.play().catch(() => {});
         else video.pause();
       },
@@ -183,6 +198,7 @@ function Hero() {
 
     return () => {
       video.removeEventListener("loadeddata", handleLoaded);
+      video.removeEventListener("canplay", handleLoaded);
       observer.disconnect();
     };
   }, []);
@@ -197,11 +213,10 @@ function Hero() {
       </div>
 
       <div className={`hero-shell relative w-full h-full ${loaded ? "is-ready" : ""}`}>
-        {/* Background Video */}
+        {/* Background Video — autoPlay removed; IntersectionObserver handles playback */}
         <video
           ref={videoRef}
           src={heroVideo}
-          autoPlay
           muted
           loop
           playsInline

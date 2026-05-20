@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { Car, User, Plane, Package, Briefcase, Map } from "lucide-react";
-
 
 import chauffeurImg from "../assets/images/Chauffeur1.jpg";
 import selfDriveImg from "../assets/images/Self-drive1.jpg";
@@ -29,7 +30,7 @@ function useReveal(threshold = 0.15, { once = true } = {}) {
           setVisible(false);
         }
       },
-      { threshold, rootMargin: "0px 0px -60px 0px" }
+      { threshold, rootMargin: "0px 0px -60px 0px" },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -49,8 +50,7 @@ function useParallax(speed = 0.08) {
 
     const update = () => {
       const rect = el.getBoundingClientRect();
-      const center =
-        rect.top + rect.height / 2 - window.innerHeight / 2;
+      const center = rect.top + rect.height / 2 - window.innerHeight / 2;
 
       el.style.transform = `translate3d(0, ${center * speed}px, 0)`;
 
@@ -407,60 +407,6 @@ const STYLES = `
   }
   .img-frame:hover .img-overlay-text { transform: translateY(0); }
 
-  /* ── Modal ── */
-  .modal-backdrop {
-    position: fixed; inset: 0; z-index: 1000;
-    background: rgba(10,12,40,0.6); backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-    animation: fadeIn 0.25s var(--ease-apple);
-  }
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  .modal-box {
-    background: linear-gradient(145deg, #f0f8fc, #e4f1f8);
-    border: 1px solid rgba(255,255,255,0.7);
-    border-radius: 28px; padding: 40px;
-    width: 100%; max-width: 480px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.25);
-    position: relative;
-    animation: slideUp 0.4s var(--ease-out-expo);
-  }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  .modal-close {
-    position: absolute; top: 16px; right: 16px;
-    background: rgba(23,30,103,0.08); border: none; border-radius: 50%;
-    width: 36px; height: 36px; cursor: pointer; font-size: 18px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--navy); transition: background 0.25s, transform 0.25s, color 0.25s;
-  }
-  .modal-close:hover { background: rgba(255,92,11,0.12); color: var(--orange); transform: rotate(90deg); }
-
-  .modal-title { font-family: var(--font-head); font-size: 26px; font-weight: 800; color: var(--orange); margin-bottom: 24px; line-height: 1.1; }
-  .modal-field { margin-bottom: 16px; }
-  .modal-label { font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--navy); opacity: 0.7; letter-spacing: 0.5px; margin-bottom: 6px; display: block; text-transform: uppercase; }
-  .modal-input, .modal-select, .modal-textarea {
-    width: 100%; padding: 12px 16px; border-radius: 12px;
-    border: 1.5px solid rgba(23,30,103,0.15);
-    background: rgba(255,255,255,0.8); backdrop-filter: blur(8px);
-    font-family: var(--font-body); font-size: 14px; color: var(--navy);
-    outline: none; transition: border-color 0.25s, box-shadow 0.25s;
-  }
-  .modal-input:focus, .modal-select:focus, .modal-textarea:focus {
-    border-color: var(--orange);
-    box-shadow: 0 0 0 3px rgba(255,92,11,0.12);
-  }
-  .modal-textarea { resize: none; height: 80px; }
-  .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .modal-submit {
-    width: 100%; margin-top: 8px;
-    padding: 14px; border-radius: 50px; border: none; cursor: pointer;
-    background: linear-gradient(135deg, #FF5C0B, #f97316);
-    color: white; font-family: var(--font-body); font-weight: 600; font-size: 15px;
-    box-shadow: 0 8px 24px rgba(255,92,11,0.38);
-    transition: transform 0.3s var(--ease-apple), box-shadow 0.3s;
-  }
-  .modal-submit:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(255,92,11,0.45); }
-
   /* Honor reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .reveal, .page-shell { transition: none !important; }
@@ -482,52 +428,11 @@ function StyleInjector() {
 }
 
 /* ─────────────────────────────────────────
-   BOOKING MODAL
-───────────────────────────────────────── */
-function BookingModal({ service, onClose }) {
-  if (!service) return null;
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>✕</button>
-        <p style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase", color: "#6366f1", marginBottom: 6 }}>
-          Book Now
-        </p>
-        <h3 className="modal-title">{service.title}</h3>
-
-        <div className="modal-field">
-          <label className="modal-label">Full Name</label>
-          <input className="modal-input" type="text" placeholder="Your name" />
-        </div>
-        <div className="modal-field">
-          <label className="modal-label">Phone Number</label>
-          <input className="modal-input" type="tel" placeholder="+254 ..." />
-        </div>
-        <div className="modal-row">
-          <div className="modal-field">
-            <label className="modal-label">Date</label>
-            <input className="modal-input" type="date" />
-          </div>
-          <div className="modal-field">
-            <label className="modal-label">Time</label>
-            <input className="modal-input" type="time" />
-          </div>
-        </div>
-        <div className="modal-field">
-          <label className="modal-label">Additional Notes</label>
-          <textarea className="modal-textarea" placeholder="Anything we should know..." />
-        </div>
-
-        <button className="modal-submit">Confirm Booking →</button>
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────
    OVERVIEW CARD
 ───────────────────────────────────────── */
-function OverviewCard({ icon: Icon, title, description, href, delay, popular }) {
+function OverviewCard({ icon, title, description, href, delay, popular }) {
+  const Icon = icon;
+
   const [ref, visible] = useReveal(0.1);
   const handleMove = (e) => {
     const el = e.currentTarget;
@@ -542,7 +447,9 @@ function OverviewCard({ icon: Icon, title, description, href, delay, popular }) 
       className={`overview-card reveal from-bottom delay-${delay} ${visible ? "visible" : ""}`}
     >
       {popular && <span className="popular-badge">⭐ Most Booked</span>}
-      <div className="card-icon"><Icon size={26} /></div>
+      <div className="card-icon">
+        <Icon size={26} />
+      </div>
       <p className="card-title">{title}</p>
       <p className="card-desc">{description}</p>
       <a href={href} className="card-link">
@@ -568,7 +475,15 @@ function ParallaxImg({ src, alt, glow, badge, tagline }) {
       </div>
       <div
         className="img-glow"
-        style={{ background: glow, filter: "blur(24px)", opacity: 0.4, position: "absolute", inset: "-8px", zIndex: -1, borderRadius: "32px" }}
+        style={{
+          background: glow,
+          filter: "blur(24px)",
+          opacity: 0.4,
+          position: "absolute",
+          inset: "-8px",
+          zIndex: -1,
+          borderRadius: "32px",
+        }}
       />
     </div>
   );
@@ -577,10 +492,26 @@ function ParallaxImg({ src, alt, glow, badge, tagline }) {
 /* ─────────────────────────────────────────
    SERVICE SECTION
 ───────────────────────────────────────── */
-function ServiceSection({ id, num, title, desc, whyText, bullets, img, alt, glow, badge, imgRight, tagline }) {
+function ServiceSection({
+  id,
+  num,
+  title,
+  desc,
+  whyText,
+  bullets,
+  img,
+  alt,
+  glow,
+  badge,
+  imgRight,
+  tagline,
+}) {
+  const navigate = useNavigate();
   const [contentRef, contentVisible] = useReveal(0.12);
   const [imgRef, imgVisible] = useReveal(0.12);
-  const [modalOpen, setModalOpen] = useState(false);
+
+  // Derive the booking service key from the section id (e.g. "service-chauffeur" → "chauffeur")
+  const serviceKey = id.replace("service-", "");
 
   const content = (
     <div
@@ -599,11 +530,17 @@ function ServiceSection({ id, num, title, desc, whyText, bullets, img, alt, glow
       <p className="expect-title">What to Expect</p>
       <ul className="expect-list">
         {bullets.map((b, i) => (
-          <li key={i}><span className="check">✔</span>{b}</li>
+          <li key={i}>
+            <span className="check">✔</span>
+            {b}
+          </li>
         ))}
       </ul>
 
-      <button className="book-btn" onClick={() => setModalOpen(true)}>
+      <button
+        className="book-btn"
+        onClick={() => navigate(`/booking?service=${serviceKey}`)}
+      >
         Book This Service <span className="arrow">→</span>
       </button>
     </div>
@@ -614,17 +551,30 @@ function ServiceSection({ id, num, title, desc, whyText, bullets, img, alt, glow
       ref={imgRef}
       className={`reveal scale-up ${imgVisible ? "visible" : ""}`}
     >
-      <ParallaxImg src={img} alt={alt} glow={glow} badge={badge} tagline={tagline} />
+      <ParallaxImg
+        src={img}
+        alt={alt}
+        glow={glow}
+        badge={badge}
+        tagline={tagline}
+      />
     </div>
   );
 
   return (
-    <>
-      <div className="service-section" id={id}>
-        {imgRight ? <>{content}{image}</> : <>{image}{content}</>}
-      </div>
-      {modalOpen && <BookingModal service={{ title }} onClose={() => setModalOpen(false)} />}
-    </>
+    <div className="service-section" id={id}>
+      {imgRight ? (
+        <>
+          {content}
+          {image}
+        </>
+      ) : (
+        <>
+          {image}
+          {content}
+        </>
+      )}
+    </div>
   );
 }
 
@@ -658,72 +608,159 @@ function ServicesPage() {
   }, []);
 
   const overview = [
-    { icon: User,     title: "Chauffeur Service",          description: "Experience luxury and professionalism with our premium chauffeur service.",       href: "#service-chauffeur", popular: true  },
-    { icon: Car,      title: "Self-Drive",                 description: "Freedom at your fingertips with our extensive fleet.",                            href: "#service-selfdrive"               },
-    { icon: Plane,    title: "Airport to Hotel Transfers", description: "Reliable and stress-free airport transport.",                                     href: "#service-airport",   popular: true  },
-    { icon: Package,  title: "Package Delivery Services",  description: "Fast, secure delivery across the city.",                                          href: "#service-courier"                 },
-    { icon: Briefcase,title: "Lease Hire Service",         description: "Flexible long-term vehicle solutions.",                                           href: "#service-lease"                   },
-    { icon: Map,      title: "Safari Tour Services",       description: "Explore Kenya with guided experiences.",                                          href: "#service-safari"                  },
+    {
+      icon: User,
+      title: "Chauffeur Service",
+      description:
+        "Experience luxury and professionalism with our premium chauffeur service.",
+      href: "#service-chauffeur",
+      popular: true,
+    },
+    {
+      icon: Car,
+      title: "Self-Drive",
+      description: "Freedom at your fingertips with our extensive fleet.",
+      href: "#service-selfdrive",
+    },
+    {
+      icon: Plane,
+      title: "Airport to Hotel Transfers",
+      description: "Reliable and stress-free airport transport.",
+      href: "#service-airport",
+      popular: true,
+    },
+    {
+      icon: Package,
+      title: "Package Delivery Services",
+      description: "Fast, secure delivery across the city.",
+      href: "#service-courier",
+    },
+    {
+      icon: Briefcase,
+      title: "Lease Hire Service",
+      description: "Flexible long-term vehicle solutions.",
+      href: "#service-lease",
+    },
+    {
+      icon: Map,
+      title: "Safari Tour Services",
+      description: "Explore Kenya with guided experiences.",
+      href: "#service-safari",
+    },
   ];
 
   const services = [
     {
-      id: "service-chauffeur", num: "01", imgRight: false,
+      id: "service-chauffeur",
+      num: "01",
+      imgRight: false,
       title: "Chauffeur Service",
       desc: "Experience luxury and professionalism with our premium chauffeur service.",
-      whyText: "We pride ourselves on maintaining a fleet of pristine luxury vehicles and employing only the most experienced, professionally certified drivers who understand the value of discretion and excellence.",
-      bullets: ["Professional and courteous drivers", "24/7 customer support and booking assistance", "Easy pickups, smooth drop-offs"],
-      img: chauffeurImg, alt: "Chauffeur Service", badge: "🚘",
+      whyText:
+        "We pride ourselves on maintaining a fleet of pristine luxury vehicles and employing only the most experienced, professionally certified drivers who understand the value of discretion and excellence.",
+      bullets: [
+        "Professional and courteous drivers",
+        "24/7 customer support and booking assistance",
+        "Easy pickups, smooth drop-offs",
+      ],
+      img: chauffeurImg,
+      alt: "Chauffeur Service",
+      badge: "🚘",
       glow: "linear-gradient(135deg, #a855f7, #6366f1, #f97316)",
       tagline: "Arrive in style, every time.",
     },
     {
-      id: "service-selfdrive", num: "02", imgRight: true,
+      id: "service-selfdrive",
+      num: "02",
+      imgRight: true,
       title: "Self-Drive",
       desc: "Freedom at your fingertips. Choose from our extensive range of well-maintained vehicles and explore at your own pace. Perfect for those who prefer the independence of driving themselves.",
-      whyText: "Our self-drive service stands out with comprehensive insurance coverage, 24/7 roadside assistance, and a diverse fleet ranging from economy to luxury vehicles, all regularly serviced and sanitized.",
-      bullets: ["Flexible rental time that works around you", "Reliable cover for your journey", "Convenient delivery and collection"],
-      img: selfDriveImg, alt: "Self Drive", badge: "🚗",
+      whyText:
+        "Our self-drive service stands out with comprehensive insurance coverage, 24/7 roadside assistance, and a diverse fleet ranging from economy to luxury vehicles, all regularly serviced and sanitized.",
+      bullets: [
+        "Flexible rental time that works around you",
+        "Reliable cover for your journey",
+        "Convenient delivery and collection",
+      ],
+      img: selfDriveImg,
+      alt: "Self Drive",
+      badge: "🚗",
       glow: "linear-gradient(135deg, #3b82f6, #06b6d4)",
       tagline: "Your road, your rules.",
     },
     {
-      id: "service-airport", num: "03", imgRight: false,
+      id: "service-airport",
+      num: "03",
+      imgRight: false,
       title: "Airport to Hotel Transfers",
       desc: "Start or end your journey stress-free with our reliable airport transfer service. We monitor flight schedules and ensure timely pickups, making your transition smooth and comfortable.",
-      whyText: "With years of experience in airport logistics, we excel at navigating traffic patterns, terminal locations, and timing. Our drivers are familiar with all major hotels and can accommodate last-minute changes.",
-      bullets: ["Direct rides", "Quick and easy pickup once you land", "Assistance with luggage handling"],
-      img: airportImg, alt: "Airport Transfers", badge: "✈️",
+      whyText:
+        "With years of experience in airport logistics, we excel at navigating traffic patterns, terminal locations, and timing. Our drivers are familiar with all major hotels and can accommodate last-minute changes.",
+      bullets: [
+        "Direct rides",
+        "Quick and easy pickup once you land",
+        "Assistance with luggage handling",
+      ],
+      img: airportImg,
+      alt: "Airport Transfers",
+      badge: "✈️",
       glow: "linear-gradient(135deg, #ec4899, #a855f7, #6366f1)",
       tagline: "Land. Relax. We've got you.",
     },
     {
-      id: "service-courier", num: "04", imgRight: true,
+      id: "service-courier",
+      num: "04",
+      imgRight: true,
       title: "Package Delivery Services",
       desc: "Fast, secure, and reliable package delivery across the city. Whether it's documents, parcels, or urgent deliveries, we handle your shipments with care and efficiency.",
-      whyText: "Fast, secure, and straightforward — that's how we handle deliveries. Expect confirmed drop-offs and same-day options when you need things delivered quickly.",
-      bullets: ["Careful handling from pickup to drop-off", "Same-day and scheduled delivery options", "Dedicated customer service team"],
-      img: courierImg, alt: "Courier Services", badge: "📦",
+      whyText:
+        "Fast, secure, and straightforward — that's how we handle deliveries. Expect confirmed drop-offs and same-day options when you need things delivered quickly.",
+      bullets: [
+        "Careful handling from pickup to drop-off",
+        "Same-day and scheduled delivery options",
+        "Dedicated customer service team",
+      ],
+      img: courierImg,
+      alt: "Courier Services",
+      badge: "📦",
       glow: "linear-gradient(135deg, #f97316, #ec4899, #eab308)",
       tagline: "Fast, safe, delivered.",
     },
     {
-      id: "service-lease", num: "05", imgRight: false,
+      id: "service-lease",
+      num: "05",
+      imgRight: false,
       title: "Lease Hire Service",
       desc: "Flexible long-term vehicle solutions for businesses and individuals. Our lease hire service offers cost-effective transportation without the commitment and overhead of vehicle ownership.",
-      whyText: "Enjoy a leasing experience designed around flexibility and ease. From managed maintenance to dedicated support, everything is set up to grow with your needs — with exclusive benefits for corporate clients.",
-      bullets: ["Leasing plans designed to fit your business needs", "Simple, hassle-free process from start to finish", "Help is always there when you need it"],
-      img: leaseImg, alt: "Lease Services", badge: "💼",
+      whyText:
+        "Enjoy a leasing experience designed around flexibility and ease. From managed maintenance to dedicated support, everything is set up to grow with your needs — with exclusive benefits for corporate clients.",
+      bullets: [
+        "Leasing plans designed to fit your business needs",
+        "Simple, hassle-free process from start to finish",
+        "Help is always there when you need it",
+      ],
+      img: leaseImg,
+      alt: "Lease Services",
+      badge: "💼",
       glow: "linear-gradient(135deg, #22c55e, #3b82f6, #10b981)",
       tagline: "Flexible vehicles for growing businesses.",
     },
     {
-      id: "service-safari", num: "06", imgRight: true,
+      id: "service-safari",
+      num: "06",
+      imgRight: true,
       title: "Safari Tour Services",
       desc: "Embark on unforgettable adventures with our specialized safari tour service. Equipped with rugged 4x4 vehicles and experienced guides, we take you to breathtaking destinations safely and comfortably.",
-      whyText: "Our safari expertise combines adventure with safety. We use specially modified vehicles for wildlife viewing and maintain strong relationships with parks and reserves.",
-      bullets: ["Trips planned around what you want to see", "Great views all around for photos", "Comfortable, ready-for-anything safari vehicles"],
-      img: safariImg, alt: "Safari Tours", badge: "🦒",
+      whyText:
+        "Our safari expertise combines adventure with safety. We use specially modified vehicles for wildlife viewing and maintain strong relationships with parks and reserves.",
+      bullets: [
+        "Trips planned around what you want to see",
+        "Great views all around for photos",
+        "Comfortable, ready-for-anything safari vehicles",
+      ],
+      img: safariImg,
+      alt: "Safari Tours",
+      badge: "🦒",
       glow: "linear-gradient(135deg, #10b981, #22c55e, #14b8a6)",
       tagline: "Kenya's wild, waiting for you.",
     },
@@ -734,27 +771,72 @@ function ServicesPage() {
       <StyleInjector />
 
       {/* Splash overlay during initial mount */}
-      <div className={`page-splash ${splashHidden ? "hidden" : ""}`} aria-hidden="true">
+      <div
+        className={`page-splash ${splashHidden ? "hidden" : ""}`}
+        aria-hidden="true"
+      >
         <div className="splash-ring" />
       </div>
 
       {/* Fixed ambient background */}
       <div className="grid-bg" />
-      <div className="orb" style={{ width: 500, height: 500, top: "5%", left: "-10%", background: "radial-gradient(circle, rgba(147,210,230,0.35), transparent 70%)" }} />
-      <div className="orb" style={{ width: 400, height: 400, top: "30%", right: "-8%", background: "radial-gradient(circle, rgba(99,102,241,0.14), transparent 70%)", animationDelay: "6s" }} />
-      <div className="orb" style={{ width: 350, height: 350, bottom: "15%", left: "20%", background: "radial-gradient(circle, rgba(174,221,234,0.28), transparent 70%)", animationDelay: "12s" }} />
-      
+      <div
+        className="orb"
+        style={{
+          width: 500,
+          height: 500,
+          top: "5%",
+          left: "-10%",
+          background:
+            "radial-gradient(circle, rgba(147,210,230,0.35), transparent 70%)",
+        }}
+      />
+      <div
+        className="orb"
+        style={{
+          width: 400,
+          height: 400,
+          top: "30%",
+          right: "-8%",
+          background:
+            "radial-gradient(circle, rgba(99,102,241,0.14), transparent 70%)",
+          animationDelay: "6s",
+        }}
+      />
+      <div
+        className="orb"
+        style={{
+          width: 350,
+          height: 350,
+          bottom: "15%",
+          left: "20%",
+          background:
+            "radial-gradient(circle, rgba(174,221,234,0.28), transparent 70%)",
+          animationDelay: "12s",
+        }}
+      />
+
       <Navbar />
       <div
         className={`page-shell ${pageLoaded ? "loaded" : ""}`}
-        style={{ position: "relative", zIndex: 1, minHeight: "100vh", background: "linear-gradient(to bottom, #eaf6fb 0%, #dff1f7 50%, #cfe8ef 100%)" }}
+        style={{
+          position: "relative",
+          zIndex: 1,
+          minHeight: "100vh",
+          background:
+            "linear-gradient(to bottom, #eaf6fb 0%, #dff1f7 50%, #cfe8ef 100%)",
+        }}
       >
-
         {/* ── HERO ── */}
         <div
-  id="services-hero"
-  style={{ paddingTop: 140, paddingBottom: 80, textAlign: "center", padding: "140px 24px 80px" }}
->
+          id="services-hero"
+          style={{
+            paddingTop: 140,
+            paddingBottom: 80,
+            textAlign: "center",
+            padding: "140px 24px 80px",
+          }}
+        >
           <div
             ref={heroRef}
             className={`reveal from-bottom ${heroVisible ? "visible" : ""}`}
@@ -775,13 +857,29 @@ function ServicesPage() {
             style={{ textAlign: "center", marginBottom: 48 }}
             className={`reveal from-bottom ${heroVisible ? "visible delay-2" : ""}`}
           >
-            <h3 style={{ fontFamily: "var(--font-head)", fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 700, color: "var(--orange)" }}>
+            <h3
+              style={{
+                fontFamily: "var(--font-head)",
+                fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
+                fontWeight: 700,
+                color: "var(--orange)",
+              }}
+            >
               Quick Overview
             </h3>
             <div className="divider" />
           </div>
 
-          <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24, columnGap: 40 }}>
+          <div
+            style={{
+              maxWidth: 1100,
+              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: 24,
+              columnGap: 40,
+            }}
+          >
             {overview.map((item, i) => (
               <OverviewCard key={i} {...item} delay={i % 3} />
             ))}
@@ -789,7 +887,15 @@ function ServicesPage() {
         </div>
 
         {/* ── DETAILED SERVICES ── */}
-        <section style={{ background: "rgba(207,232,239,0.55)", backdropFilter: "blur(20px)", padding: "80px 40px", borderTop: "1px solid rgba(255,255,255,0.5)", borderBottom: "1px solid rgba(255,255,255,0.5)" }}>
+        <section
+          style={{
+            background: "rgba(207,232,239,0.55)",
+            backdropFilter: "blur(20px)",
+            padding: "80px 40px",
+            borderTop: "1px solid rgba(255,255,255,0.5)",
+            borderBottom: "1px solid rgba(255,255,255,0.5)",
+          }}
+        >
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 20 }}>
               <h2 className="section-title">
@@ -805,7 +911,6 @@ function ServicesPage() {
             ))}
           </div>
         </section>
-
       </div>
     </>
   );

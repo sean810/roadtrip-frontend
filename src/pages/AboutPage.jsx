@@ -77,18 +77,13 @@ const ABOUT_STYLES = `
   *, *::before, *::after { box-sizing: border-box; }
 
   :root {
-    --orange: #FF5C0B;
-    --navy: #171E67;
-    --cream: #f9f6f1;
-    --sky: #cfe8ef;
-    --sky-light: #eaf6fb;
-    --glass: rgba(255,255,255,0.65);
-    --glass-strong: rgba(255,255,255,0.82);
-    --glass-border: rgba(255,255,255,0.45);
     --ease-apple: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --font-head: 'Abhaya Libre', serif;
     --font-body: 'Inter', sans-serif;
+    --glass: rgba(255,255,255,0.65);
+    --glass-strong: rgba(255,255,255,0.82);
+    --glass-border: rgba(255,255,255,0.45);
   }
 
   html { scroll-behavior: smooth; }
@@ -99,7 +94,7 @@ const ABOUT_STYLES = `
     position: relative;
     z-index: 1;
     overflow: hidden;
-    background: linear-gradient(to bottom, #eaf6fb 0%, #dff1f7 50%, #cfe8ef 100%);
+    background: linear-gradient(to bottom, var(--sky-light) 0%, var(--sky-medium) 50%, var(--sky-dark) 100%);
     color: var(--navy);
   }
 
@@ -119,7 +114,7 @@ const ABOUT_STYLES = `
     position: fixed; inset: 0; z-index: 2000;
     display: flex; align-items: center; justify-content: center;
     pointer-events: none; opacity: 1;
-    background: linear-gradient(135deg, #eaf6fb, #cfe8ef);
+    background: linear-gradient(135deg, var(--sky-light), var(--sky-dark));
     transition: opacity 0.7s var(--ease-out-expo);
   }
   .about-splash.hidden { opacity: 0; }
@@ -127,7 +122,7 @@ const ABOUT_STYLES = `
   .about-splash-ring {
     width: 54px; height: 54px; border-radius: 50%;
     border: 3px solid rgba(255,92,11,0.18);
-    border-top-color: var(--orange);
+    border-top-color: var(--primary);
     animation: aboutSpin 0.9s linear infinite;
   }
   @keyframes aboutSpin { to { transform: rotate(360deg); } }
@@ -305,7 +300,7 @@ const ABOUT_STYLES = `
   .stat-num {
     font-family: var(--font-head);
     font-size: clamp(2.2rem, 4vw, 3.3rem);
-    font-weight: 800; line-height: 1; color: var(--orange);
+    font-weight: 800; line-height: 1; color: var(--primary);
   }
   .stat-label {
     margin-top: 8px;
@@ -369,7 +364,7 @@ const ABOUT_STYLES = `
 
   .section-title {
     margin: 14px 0 22px;
-    color: var(--orange);
+    color: #FF5C0B;
     font-family: var(--font-head);
     font-size: clamp(2.6rem, 4.8vw, 4.3rem);
     font-weight: 800; line-height: 0.98;
@@ -434,7 +429,7 @@ const ABOUT_STYLES = `
   .divider {
     width: 74px; height: 2px; margin: 18px auto 0;
     border-radius: 999px;
-    background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
   }
 
   .direction-grid {
@@ -485,7 +480,7 @@ const ABOUT_STYLES = `
 
   .card-title {
     position: relative; z-index: 1;
-    margin: 0 0 14px; color: var(--orange);
+    margin: 0 0 14px; color: var(--primary);
     font-family: var(--font-head);
     font-size: 30px; font-weight: 800; line-height: 1.08;
   }
@@ -727,7 +722,7 @@ const ABOUT_STYLES = `
     z-index: -1;
     border-radius: 50%;
     background: conic-gradient(
-      #4ade80, #a16207, #ef4444, #6366f1, #eab308, #ec4899, #f97316, #a855f7, #4ade80
+      #4ade80, #a16207, #ef4444, #6366f1, #eab308, #ec4899, #f97316, #6366f1, #4ade80
     );
     opacity: 0.4;
     filter: blur(10px);
@@ -906,7 +901,7 @@ const ABOUT_STYLES = `
     font-size: clamp(3rem, 5.8vw, 5.6rem);
     font-weight: 800; line-height: 0.95;
   }
-  .cta-title span { color: var(--orange); }
+  .cta-title span { color: var(--primary); }
 
   .cta-copy {
     max-width: 560px; margin: 22px auto 0;
@@ -919,7 +914,7 @@ const ABOUT_STYLES = `
     display: inline-flex; align-items: center; justify-content: center;
     min-height: 54px; margin-top: 34px; padding: 0 28px;
     border: 0; border-radius: 999px;
-    background: var(--orange); color: white;
+    background: var(--primary); color: white;
     font-family: var(--font-body);
     font-size: 14px; font-weight: 700; letter-spacing: 0.3px;
     text-decoration: none;
@@ -1135,8 +1130,8 @@ function AboutPage() {
       title: "Customer Focus",
       description: "We put our customers at the heart of everything we do, ensuring their needs are understood, valued, and exceeded.",
       icon: Target,
-      color: "#a855f7",
-      glow: "rgba(168, 85, 247, 0.4)",
+      color: "#6366f1",
+      glow: "rgba(99, 102, 241, 0.4)",
       angle: 315,
       posClass: "pos-top-left"
     }
@@ -1277,12 +1272,12 @@ function AboutPage() {
         {/* ── VALUES ── */}
         <section
           ref={valuesRef}
-          className={`about-section ${valuesVisible ? "visible" : ""}`}
+          className={`about-section about-reveal from-bottom ${valuesVisible ? "visible" : ""}`}
         >
           <div className="about-container">
             <div className="center-head" style={{ marginBottom: '60px' }}>
-              <h2 style={{ fontFamily: 'var(--font-head)', fontSize: '32px', color: '#a855f7', marginBottom: '8px', fontWeight: 700 }}>What Drives Us</h2>
-              <h1 style={{ fontFamily: 'var(--font-head)', fontSize: '56px', fontWeight: 800, color: 'var(--orange)', margin: '0 0 20px 0', lineHeight: 1 }}>Our Core Values</h1>
+              <h2 style={{ fontFamily: 'var(--font-head)', fontSize: '32px', color: '#6366f1', marginBottom: '8px', fontWeight: 700 }}>What Drives Us</h2>
+              <h1 style={{ fontFamily: 'var(--font-head)', fontSize: '56px', fontWeight: 800, color: 'var(--primary)', margin: '0 0 20px 0', lineHeight: 1 }}>Our Core Values</h1>
               <p style={{ fontFamily: 'var(--font-head)', fontSize: '18px', fontWeight: 700, color: 'var(--navy)', maxWidth: '600px', margin: '0 auto' }}>
                 The principles that guide our business and define our commitment to excellence
               </p>

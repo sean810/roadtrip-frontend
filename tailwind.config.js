@@ -31,10 +31,13 @@ export default {
           "linear-gradient(to bottom, #D9F1F7 25%, #D9F1F7 19%, #D9F1F7 56%, #D9F1F7 82%, #D9F1F7 98%)", 
       },
       colors: {
-        primary: "#FF5C0B",
-        heading: "#171E67",
+        primary: "var(--primary)",
+        "primary-light": "var(--primary-light)",
+        "primary-dark": "var(--primary-dark)",
+        heading: "var(--navy)",
+        accent: "var(--accent)",
         body: "#707499",
-        page: "#BFD8F9",
+        page: "var(--sky-medium)",
         soft: "#E9F1FF",
 
         pillServicesBg: "#C8FFE0",
@@ -46,7 +49,7 @@ export default {
         pillTestimonialBg: "#eeb1b1",
         pillTestimonialText: "#ff0000",
 
-        accentBlue: "#05C0E1",
+        accentBlue: "var(--accent)",
         success: "#0DBD58",
       },
     },

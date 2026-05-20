@@ -85,7 +85,7 @@ const WhyChooseUs = () => {
             style={{
               background: "rgba(99,102,241,0.12)",
               border: "1px solid rgba(99,102,241,0.2)",
-              color: "#4f46e5",
+              color: "#6366f1",
             }}
           >
             Why choose us

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import roadtrip from "../assets/logos/roadtrip.png";
 
@@ -124,13 +124,16 @@ function Navbar() {
   const isAbout = location.pathname === "/about";
   const isServices = location.pathname === "/services";
 
-  const sections = [
+  const sections = useMemo(
+  () => [
     { label: "Home", id: "home", type: "scroll", path: "/" },
     { label: "About Us", id: "about", type: "route", path: "/about" },
     { label: "Services", id: "services", type: "route", path: "/services" },
     { label: "Partners", id: "partners", type: "scroll", path: "/" },
     { label: "Testimonials", id: "testimonials", type: "scroll", path: "/" },
-  ];
+  ],
+  []
+);
 
   /* Mount animation */
   useEffect(() => {
@@ -163,9 +166,11 @@ useEffect(() => {
   /* Scroll tracking ONLY on homepage */
   useEffect(() => {
     if (!isHome) {
-      setActiveSection("");
-      return;
-    }
+  requestAnimationFrame(() => {
+    setActiveSection("");
+  });
+  return;
+}
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
@@ -189,7 +194,7 @@ useEffect(() => {
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHome]);
+  }, [isHome, sections]);
 
   /* Detect and scroll to hash on home page (handles cross-page links) */
   useEffect(() => {
@@ -225,7 +230,7 @@ useEffect(() => {
     requestAnimationFrame(() => window.scrollTo(0, 0));
   };
 
-  const goHomeSection = (sectionId) => (e) => {
+  const goHomeSection = () => {
     // If we're already home, just let the standard anchor behavior or scroll tracking handle it
     if (isHome) return;
     
@@ -324,8 +329,8 @@ useEffect(() => {
           } delay-5 flex items-center gap-6 font-inter font-bold`}
         >
           <Link
-            to="/services"
-            onClick={goRouteTop("/services")}
+            to="/booking"
+            onClick={goRouteTop("/booking")}
             className="nav-cta px-6 py-2 rounded-lg text-sm text-white active:scale-95"
           >
             Book Now

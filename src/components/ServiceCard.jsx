@@ -1,14 +1,14 @@
 import { CheckCircle } from "lucide-react";
 import { useRef } from "react";
 
-function ServiceCard({ title, description, points, image, tagline, badge }) {
+function ServiceCard({ title, description, points, image, tagline,}) {
   const cardRef = useRef(null);
 
   // Optimized Mouse-tracked glow
   const handleMove = (e) => {
     const el = cardRef.current;
     if (!el) return;
-    
+
     // Use requestAnimationFrame to sync with the screen refresh rate
     requestAnimationFrame(() => {
       const rect = el.getBoundingClientRect();
@@ -96,7 +96,9 @@ function ServiceCard({ title, description, points, image, tagline, badge }) {
             >
               <p
                 className="font-abhaya font-extrabold text-white text-lg leading-tight translate-y-3 transition-transform duration-500 group-hover:translate-y-0"
-                style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
+                style={{
+                  transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
               >
                 {tagline}
               </p>
@@ -125,7 +127,9 @@ function ServiceCard({ title, description, points, image, tagline, badge }) {
               <li
                 key={index}
                 className="flex items-start gap-2 transition-all duration-300 ease-out hover:translate-x-1"
-                style={{ transitionTimingFunction: "cubic-bezier(0.25,0.46,0.45,0.94)" }}
+                style={{
+                  transitionTimingFunction: "cubic-bezier(0.25,0.46,0.45,0.94)",
+                }}
               >
                 <CheckCircle
                   size={15}
