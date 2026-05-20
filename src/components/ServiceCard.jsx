@@ -4,23 +4,9 @@ import { useRef } from "react";
 function ServiceCard({ title, description, points, image, tagline,}) {
   const cardRef = useRef(null);
 
-  // Optimized Mouse-tracked glow
-  const handleMove = (e) => {
-    const el = cardRef.current;
-    if (!el) return;
-
-    // Use requestAnimationFrame to sync with the screen refresh rate
-    requestAnimationFrame(() => {
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      el.style.setProperty("--mx", `${x}px`);
-      el.style.setProperty("--my", `${y}px`);
-    });
-  };
 
   return (
-    <article className="h-full group" onMouseMove={handleMove}>
+    <article className="h-full group">
       <div
         ref={cardRef}
         className="
@@ -28,12 +14,10 @@ function ServiceCard({ title, description, points, image, tagline,}) {
           border border-white/60
           flex flex-col
           transition-all duration-500
-          hover:-translate-y-2.5 hover:rotate-[-0.2deg]
+          hover:-translate-y-2.5 
         "
         style={{
           background: "rgba(255,255,255,0.72)",
-          backdropFilter: "blur(4px)",
-          WebkitBackdropFilter: "blur(4px)",
           boxShadow: "0 8px 32px rgba(23,30,103,0.07)",
           transitionTimingFunction: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
@@ -55,27 +39,19 @@ function ServiceCard({ title, description, points, image, tagline,}) {
               "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%)",
           }}
         />
-        {/* Mouse-tracked glow */}
-        <div
-          className="pointer-events-none absolute inset-0 z-[1] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          style={{
-            background:
-              "radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,92,11,0.13), transparent 55%)",
-          }}
-        />
 
         {/* Image */}
         <div className="relative z-[2] h-52 w-full overflow-hidden rounded-t-2xl">
           <img
             src={image}
             alt={title}
-            loading="eager"
-            decoding="sync"
+            loading="lazy"
+            decoding="async"
             width={480}
             height={208}
             className="
               w-full h-full object-cover
-              transition-transform duration-[800ms] ease-out
+              transition-transform duration-[500ms] ease-out
               group-hover:scale-[1.08]
             "
             style={{ willChange: "transform" }}

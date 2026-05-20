@@ -95,8 +95,8 @@ const Services = () => {
         {/* Header */}
         <div
           ref={headerRef}
-         className={`text-center mb-16 transition-all duration-[900ms] ease-out ${
-            //  className={`text-center mb-16 transition-all duration-[900ms] ease-out ${
+         className={`text-center mb-16 transition-all duration-[500ms] ease-out ${
+            //  className={`text-center mb-16 transition-all duration-[500ms] ease-out ${
             headerVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-10 scale-[0.96]"
           }`}
           style={{
@@ -141,7 +141,7 @@ const Services = () => {
         {/* Cards */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => (
-            <RevealCard key={service.title} delay={index * 140}>
+            <RevealCard key={service.title} delay={index * 70}>
               <ServiceCard {...service} />
             </RevealCard>
           ))}
@@ -150,7 +150,7 @@ const Services = () => {
         {/* CTA */}
         <div
           ref={ctaRef}
-          className={`mt-16 flex justify-center transition-all duration-[900ms] ease-out ${
+          className={`mt-16 flex justify-center transition-all duration-[500ms] ease-out ${
             ctaVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
           }`}
         >
@@ -205,7 +205,7 @@ function RevealCard({ children, delay = 0 }) {
   return (
     <div
       ref={ref}
-      className={`transition-all duration-[800ms] ease-out ${
+      className={`transition-all duration-[500ms] ease-out ${
         visible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-[0.98]"
       }`}
       style={{
