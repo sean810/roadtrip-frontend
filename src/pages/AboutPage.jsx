@@ -436,42 +436,80 @@ const ABOUT_STYLES = `
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px;
   }
 
-  .direction-card, .value-card {
-    position: relative; overflow: hidden;
-    border: 1px solid var(--glass-border);
+  /* ── Direction card — redesigned ── */
+  .direction-card {
+    position: relative;
+    overflow: hidden;
     border-radius: 24px;
-    background: var(--glass);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: 0 16px 60px rgba(23,30,103,0.1);
+    background: #ffffff;
+    box-shadow:
+      0 4px 6px rgba(23,30,103,0.06),
+      0 20px 50px rgba(23,30,103,0.13),
+      0 1px 0 rgba(255,255,255,0.9) inset;
+    padding: 42px 36px 38px;
+    text-align: left;
     transition:
       transform 0.5s var(--ease-apple),
-      box-shadow 0.5s var(--ease-apple),
-      border-color 0.4s var(--ease-apple);
+      box-shadow 0.5s var(--ease-apple);
   }
-  .direction-card { padding: 38px 34px; text-align: left; }
-
-  .direction-card::before, .value-card::before {
-    content: ""; position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.44), transparent 62%);
-    pointer-events: none;
-  }
-  .direction-card::after, .value-card::after {
-    content: ""; position: absolute; inset: 0;
-    background: radial-gradient(circle at var(--mx, 20%) var(--my, 0%), rgba(255,92,11,0.12), transparent 48%);
-    opacity: 0; transition: opacity 0.4s var(--ease-apple);
-    pointer-events: none;
-  }
-  .direction-card:hover, .value-card:hover {
+  .direction-card:hover {
     transform: translateY(-8px);
-    border-color: rgba(255,92,11,0.28);
-    box-shadow: 0 28px 80px rgba(23,30,103,0.16);
+    box-shadow:
+      0 8px 12px rgba(23,30,103,0.08),
+      0 32px 70px rgba(23,30,103,0.18),
+      0 1px 0 rgba(255,255,255,0.9) inset;
   }
-  .direction-card:hover::after, .value-card:hover::after { opacity: 1; }
+
+  /* Corner accent rectangles — top-left (navy) */
+  .dc-corner-tl {
+    position: absolute; top: 0; left: 0;
+    width: 64px; height: 64px;
+    pointer-events: none; z-index: 0;
+  }
+  .dc-corner-tl span {
+    position: absolute;
+    border-radius: 6px;
+    background: #171E67;
+    opacity: 0.85;
+  }
+  .dc-corner-tl span:nth-child(1) { width: 40px; height: 12px; top: 10px; left: -8px; transform: rotate(-38deg); }
+  .dc-corner-tl span:nth-child(2) { width: 40px; height: 12px; top: 20px; left: -4px; transform: rotate(-38deg); opacity: 0.5; }
+  .dc-corner-tl span:nth-child(3) { width: 40px; height: 12px; top: 30px; left:  0px; transform: rotate(-38deg); opacity: 0.25; }
+
+  /* Corner accent rectangles — bottom-right (orange) */
+  .dc-corner-br {
+    position: absolute; bottom: 0; right: 0;
+    width: 64px; height: 64px;
+    pointer-events: none; z-index: 0;
+  }
+  .dc-corner-br span {
+    position: absolute;
+    border-radius: 6px;
+    background: #FF5C0B;
+    opacity: 0.85;
+  }
+  .dc-corner-br span:nth-child(1) { width: 40px; height: 12px; bottom: 10px; right: -8px; transform: rotate(-38deg); }
+  .dc-corner-br span:nth-child(2) { width: 40px; height: 12px; bottom: 20px; right: -4px; transform: rotate(-38deg); opacity: 0.5; }
+  .dc-corner-br span:nth-child(3) { width: 40px; height: 12px; bottom: 30px; right:  0px; transform: rotate(-38deg); opacity: 0.25; }
+
+  /* Icon badge */
+  .dc-icon-badge {
+    position: relative; z-index: 1;
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #171E67 0%, #2a3499 100%);
+    box-shadow: 0 8px 20px rgba(23,30,103,0.28);
+    transition: transform 0.4s var(--ease-apple), box-shadow 0.4s var(--ease-apple);
+  }
+  .direction-card:hover .dc-icon-badge {
+    transform: scale(1.1) rotate(-4deg);
+    box-shadow: 0 14px 30px rgba(23,30,103,0.38);
+  }
 
   .card-kicker {
     position: relative; z-index: 1;
-    display: inline-flex; margin-bottom: 18px;
+    display: inline-flex; margin-bottom: 10px;
     color: #6366f1;
     font-family: var(--font-body);
     font-size: 11px; font-weight: 600;
@@ -493,7 +531,37 @@ const ABOUT_STYLES = `
   }
 
   .values-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
-  .value-card { padding: 30px 26px; }
+  .value-card {
+    position: relative; overflow: hidden;
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    background: var(--glass);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 16px 60px rgba(23,30,103,0.1);
+    transition:
+      transform 0.5s var(--ease-apple),
+      box-shadow 0.5s var(--ease-apple),
+      border-color 0.4s var(--ease-apple);
+    padding: 30px 26px;
+  }
+  .value-card::before {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.44), transparent 62%);
+    pointer-events: none;
+  }
+  .value-card::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--mx, 20%) var(--my, 0%), rgba(255,92,11,0.12), transparent 48%);
+    opacity: 0; transition: opacity 0.4s var(--ease-apple);
+    pointer-events: none;
+  }
+  .value-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255,92,11,0.28);
+    box-shadow: 0 28px 80px rgba(23,30,103,0.16);
+  }
+  .value-card:hover::after { opacity: 1; }
 
   .value-number {
     position: relative; z-index: 1; margin-bottom: 18px;
@@ -643,7 +711,6 @@ const ABOUT_STYLES = `
   .design-value-item.pos-left .design-content { top: 125px; left: 50%; transform: translateX(-50%); text-align: center; }
   .design-value-item.pos-top-left .design-content { right: 115px; top: 50%; transform: translateY(-50%); text-align: right; }
 
-  /* Focused state - move content outward on hover */
   .design-value-item.focused.pos-top .design-content { transform: translateY(-50%) translateX(20px); }
   .design-value-item.focused.pos-top-right .design-content { transform: translateY(-50%) translateX(25px); }
   .design-value-item.focused.pos-right .design-content { transform: translateX(-50%) translateY(35px); }
@@ -733,143 +800,90 @@ const ABOUT_STYLES = `
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
+
   /* ===== ENHANCED CORE VALUES ANIMATIONS ===== */
-
-/* Entry animation */
-.values-circular-layout .design-value-item {
-  opacity: 0;
-  transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(-1 * var(--wheel-radius))) rotate(calc(-1 * var(--angle))) scale(0.85);
-  transition:
-    transform 0.9s cubic-bezier(0.16,1,0.3,1),
-    opacity 0.9s cubic-bezier(0.16,1,0.3,1);
-}
-
-/* When visible */
-.about-section.visible .design-value-item {
-  opacity: 1;
-  transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(-1 * var(--wheel-radius))) rotate(calc(-1 * var(--angle))) scale(1);
-}
-
-/* Stagger effect */
-.values-circular-layout .design-value-item:nth-child(1) { transition-delay: 0.1s; }
-.values-circular-layout .design-value-item:nth-child(2) { transition-delay: 0.2s; }
-.values-circular-layout .design-value-item:nth-child(3) { transition-delay: 0.3s; }
-.values-circular-layout .design-value-item:nth-child(4) { transition-delay: 0.4s; }
-.values-circular-layout .design-value-item:nth-child(5) { transition-delay: 0.5s; }
-.values-circular-layout .design-value-item:nth-child(6) { transition-delay: 0.6s; }
-.values-circular-layout .design-value-item:nth-child(7) { transition-delay: 0.7s; }
-.values-circular-layout .design-value-item:nth-child(8) { transition-delay: 0.8s; }
-
-/* Floating motion */
-.design-value-item {
-  animation: floatOrb 6s ease-in-out infinite;
-}
-
-.design-value-item:nth-child(even) {
-  animation-delay: 3s;
-}
-
-@keyframes floatOrb {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-/* Orb hover upgrade */
-.design-orb {
-  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.design-orb:hover {
-  transform: scale(1.18) translateY(-6px);
-  box-shadow: 0 20px 50px var(--glow);
-}
-
-/* Interactive Hover Orbit Effect */
-.values-circular-layout {
-  position: relative;
-}
-
-.design-value-item {
-  transition: opacity 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.design-value-item.dimmed {
-  opacity: 0.3;
-  filter: grayscale(0.8);
-}
-
-.design-value-item.focused {
-  z-index: 20;
-}
-
-.design-value-item.focused .design-orb {
-  transform: scale(1.25) translateY(-8px);
-  filter: drop-shadow(0 0 20px var(--glow));
-}
-
-.design-value-item.rotate-away {
-  transform: rotate(calc(var(--rotation-offset, 0deg))) scale(0.92);
-}
-
-/* Center logo reacts to hover */
-.values-circular-layout:has(.design-value-item:hover) .center-logo-box {
-  filter: brightness(1.1);
-  transition: filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.center-logo-box {
-  transition: filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* Connector lines react to hovered item */
-.values-circular-layout:has(.design-value-item:hover) .connectors-svg path {
-  opacity: 0.25;
-  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), stroke 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.connectors-svg path {
-  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), stroke 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.design-value-item:hover ~ .connectors-svg path:nth-child(var(--connector-index, 0)),
-.design-value-item.focused ~ .connectors-svg path:nth-child(var(--connector-index, 0)) {
-  opacity: 1;
-  stroke-width: 4;
-}
-
-/* Center glow pulse */
-.center-logo-box {
-  animation: centerPulse 4s ease-in-out infinite;
-}
-
-@keyframes centerPulse {
-  0%,100% { box-shadow: 0 10px 40px rgba(23,30,103,0.06); }
-  50% { box-shadow: 0 20px 60px rgba(255,92,11,0.25); }
-}
-
-/* Connector fade animation */
-.connectors-svg path {
-  opacity: 0;
-  stroke-dasharray: 400;
-  stroke-dashoffset: 400;
-  animation: drawLine 1.4s ease forwards;
-}
-
-.connectors-svg path:nth-child(1) { animation-delay: 0.2s; }
-.connectors-svg path:nth-child(2) { animation-delay: 0.3s; }
-.connectors-svg path:nth-child(3) { animation-delay: 0.4s; }
-.connectors-svg path:nth-child(4) { animation-delay: 0.5s; }
-.connectors-svg path:nth-child(5) { animation-delay: 0.6s; }
-.connectors-svg path:nth-child(6) { animation-delay: 0.7s; }
-.connectors-svg path:nth-child(7) { animation-delay: 0.8s; }
-.connectors-svg path:nth-child(8) { animation-delay: 0.9s; }
-
-@keyframes drawLine {
-  to {
-    opacity: 1;
-    stroke-dashoffset: 0;
+  .values-circular-layout .design-value-item {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(-1 * var(--wheel-radius))) rotate(calc(-1 * var(--angle))) scale(0.85);
+    transition:
+      transform 0.9s cubic-bezier(0.16,1,0.3,1),
+      opacity 0.9s cubic-bezier(0.16,1,0.3,1);
   }
-}
+
+  .about-section.visible .design-value-item {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(-1 * var(--wheel-radius))) rotate(calc(-1 * var(--angle))) scale(1);
+  }
+
+  .values-circular-layout .design-value-item:nth-child(1) { transition-delay: 0.1s; }
+  .values-circular-layout .design-value-item:nth-child(2) { transition-delay: 0.2s; }
+  .values-circular-layout .design-value-item:nth-child(3) { transition-delay: 0.3s; }
+  .values-circular-layout .design-value-item:nth-child(4) { transition-delay: 0.4s; }
+  .values-circular-layout .design-value-item:nth-child(5) { transition-delay: 0.5s; }
+  .values-circular-layout .design-value-item:nth-child(6) { transition-delay: 0.6s; }
+  .values-circular-layout .design-value-item:nth-child(7) { transition-delay: 0.7s; }
+  .values-circular-layout .design-value-item:nth-child(8) { transition-delay: 0.8s; }
+
+  .design-value-item {
+    animation: floatOrb 6s ease-in-out infinite;
+  }
+  .design-value-item:nth-child(even) { animation-delay: 3s; }
+  @keyframes floatOrb {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .design-orb { transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+  .design-orb:hover { transform: scale(1.18) translateY(-6px); box-shadow: 0 20px 50px var(--glow); }
+
+  .design-value-item {
+    transition: opacity 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .design-value-item.dimmed { opacity: 0.3; filter: grayscale(0.8); }
+  .design-value-item.focused { z-index: 20; }
+  .design-value-item.focused .design-orb {
+    transform: scale(1.25) translateY(-8px);
+    filter: drop-shadow(0 0 20px var(--glow));
+  }
+  .design-value-item.rotate-away { transform: rotate(calc(var(--rotation-offset, 0deg))) scale(0.92); }
+
+  .values-circular-layout:has(.design-value-item:hover) .center-logo-box {
+    filter: brightness(1.1);
+    transition: filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .center-logo-box { transition: filter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+
+  .values-circular-layout:has(.design-value-item:hover) .connectors-svg path {
+    opacity: 0.25;
+    transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), stroke 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .connectors-svg path {
+    transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), stroke 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .center-logo-box { animation: centerPulse 4s ease-in-out infinite; }
+  @keyframes centerPulse {
+    0%,100% { box-shadow: 0 10px 40px rgba(23,30,103,0.06); }
+    50% { box-shadow: 0 20px 60px rgba(255,92,11,0.25); }
+  }
+
+  .connectors-svg path {
+    opacity: 0;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: drawLine 1.4s ease forwards;
+  }
+  .connectors-svg path:nth-child(1) { animation-delay: 0.2s; }
+  .connectors-svg path:nth-child(2) { animation-delay: 0.3s; }
+  .connectors-svg path:nth-child(3) { animation-delay: 0.4s; }
+  .connectors-svg path:nth-child(4) { animation-delay: 0.5s; }
+  .connectors-svg path:nth-child(5) { animation-delay: 0.6s; }
+  .connectors-svg path:nth-child(6) { animation-delay: 0.7s; }
+  .connectors-svg path:nth-child(7) { animation-delay: 0.8s; }
+  .connectors-svg path:nth-child(8) { animation-delay: 0.9s; }
+  @keyframes drawLine {
+    to { opacity: 1; stroke-dashoffset: 0; }
+  }
 
   .cta-section {
     position: relative; min-height: 66vh;
@@ -986,15 +1000,16 @@ function StyleInjector() {
   return null;
 }
 
-import { 
-  ShieldCheck, 
-  Award, 
-  Users, 
-  Scale, 
-  Heart, 
-  ShieldPlus, 
-  ClipboardCheck, 
-  Target
+import {
+  ShieldCheck,
+  Award,
+  Users,
+  Scale,
+  Heart,
+  ShieldPlus,
+  ClipboardCheck,
+  Target,
+  Eye,
 } from "lucide-react";
 
 function AboutPage() {
@@ -1054,11 +1069,13 @@ function AboutPage() {
       kicker: "Mission",
       title: "Company Mission",
       copy: "Our mission is to see all our clients happy and satisfied with excellent services.",
+      icon: Target,
     },
     {
       kicker: "Vision",
       title: "Company Vision",
       copy: "To be the most preferred travel company delivering reliable services.",
+      icon: Eye,
     },
   ];
 
@@ -1155,10 +1172,10 @@ function AboutPage() {
 
         {/* ── HERO ── */}
         <section
-  id="about-hero"
-  ref={heroRef}
-  className={`about-hero about-reveal scale-up delay-0 ${heroVisible ? "visible" : ""}`}
->
+          id="about-hero"
+          ref={heroRef}
+          className={`about-hero about-reveal scale-up delay-0 ${heroVisible ? "visible" : ""}`}
+        >
           <img
             ref={heroImageRef}
             src={heroImg}
@@ -1254,17 +1271,34 @@ function AboutPage() {
             </div>
 
             <div className="direction-grid">
-              {directions.map((item, index) => (
-                <div
-                  key={index}
-                  className={`direction-card about-reveal from-bottom delay-${index + 1} ${directionVisible ? "visible" : ""}`}
-                  onMouseMove={handleMouseMove}
-                >
-                  <span className="card-kicker">{item.kicker}</span>
-                  <h3 className="card-title">{item.title}</h3>
-                  <p className="card-copy">{item.copy}</p>
-                </div>
-              ))}
+              {directions.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={index}
+                    className={`direction-card about-reveal from-bottom delay-${index + 1} ${directionVisible ? "visible" : ""}`}
+                  >
+                    {/* Top-left corner accent — navy */}
+                    <div className="dc-corner-tl" aria-hidden="true">
+                      <span /><span /><span />
+                    </div>
+
+                    {/* Icon badge */}
+                    <div className="dc-icon-badge">
+                      <Icon size={24} color="white" strokeWidth={1.6} />
+                    </div>
+
+                    <span className="card-kicker">{item.kicker}</span>
+                    <h3 className="card-title">{item.title}</h3>
+                    <p className="card-copy">{item.copy}</p>
+
+                    {/* Bottom-right corner accent — orange */}
+                    <div className="dc-corner-br" aria-hidden="true">
+                      <span /><span /><span />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
