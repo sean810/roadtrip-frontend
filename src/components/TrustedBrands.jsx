@@ -33,7 +33,7 @@ function useReveal(threshold = 0.15, { once = true } = {}) {
           setVisible(false);
         }
       },
-      { threshold, rootMargin: "0px 0px -60px 0px" }
+      { threshold, rootMargin: "0px 0px -60px 0px" },
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -43,8 +43,17 @@ function useReveal(threshold = 0.15, { once = true } = {}) {
 }
 
 const logos = [
-  citizen, excelsior, amicus, azali, alfajiri, kivo,
-  avu, peacenet, qcc, urf, vka,
+  citizen,
+  excelsior,
+  amicus,
+  azali,
+  alfajiri,
+  kivo,
+  avu,
+  peacenet,
+  qcc,
+  urf,
+  vka,
 ];
 
 const values = [
@@ -198,7 +207,7 @@ function ValueCard({ Icon, title, text, visible, delay }) {
 
 const TrustedBrands = () => {
   const [headerRef, headerVisible] = useReveal(0.2);
-  const [marqueeRef, marqueeVisible] = useReveal(0.1, { once: false });
+  const [marqueeRef] = useReveal(0.1);
   const [cardsRef, cardsVisible] = useReveal(0.1);
 
   return (
@@ -209,11 +218,17 @@ const TrustedBrands = () => {
       {/* Ambient orbs */}
       <div
         className="pointer-events-none absolute -top-32 -left-24 w-[500px] h-[500px] rounded-full opacity-25 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%)" }}
+        style={{
+          background:
+            "radial-gradient(circle, rgba(99,102,241,0.18), transparent 70%)",
+        }}
       />
       <div
         className="pointer-events-none absolute -bottom-32 -right-20 w-[460px] h-[460px] rounded-full opacity-25 blur-3xl"
-        style={{ background: "radial-gradient(circle, rgba(255,92,11,0.18), transparent 70%)" }}
+        style={{
+          background:
+            "radial-gradient(circle, rgba(255,92,11,0.18), transparent 70%)",
+        }}
       />
 
       <div className="relative max-w-7xl mx-auto px-6 text-center">
@@ -263,32 +278,24 @@ const TrustedBrands = () => {
         </div>
 
         {/* Marquee — BIGGER tiles & logos */}
-        <div
-          ref={marqueeRef}
-          className={`relative overflow-hidden mb-32 transition-all duration-[900ms] ${
-            marqueeVisible
-              ? "opacity-100 translate-y-0 blur-0"
-              : "opacity-0 translate-y-6 blur-sm"
-          }`}
-          style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
-        >
+        <div ref={marqueeRef} className="relative overflow-hidden mb-32">
           {/* Fade edges */}
           <div className="pointer-events-none absolute left-0 top-0 h-full w-16 sm:w-24 bg-gradient-to-r from-skybg to-transparent z-10" />
           <div className="pointer-events-none absolute right-0 top-0 h-full w-16 sm:w-24 bg-gradient-to-l from-skybg to-transparent z-10" />
 
-          <div className="flex w-max gap-8 sm:gap-14 animate-marquee pause-on-hover items-center">
-            {[...logos, ...logos.slice(0, 6)].map((logo, index) => (
+          <div className="flex w-max gap-8 sm:gap-14 animate-marquee pause-on-hover items-center will-change-transform">
+            {[...logos, ...logos].map((logo, index) => (
               <div
                 key={index}
                 className="
-                  group flex items-center justify-center
-                  h-24 sm:h-32 md:h-36 w-40 sm:w-56 md:w-64
-                  bg-white/70 backdrop-blur-sm
-                  rounded-2xl border border-gray-200
-                  shadow-sm
-                  transition-all duration-300
-                  hover:bg-white hover:shadow-lg hover:-translate-y-1
-                "
+  group flex items-center justify-center
+  h-24 sm:h-32 md:h-36 w-40 sm:w-56 md:w-64
+  bg-white/70
+  rounded-2xl border border-gray-200
+  shadow-sm
+  transition-transform transition-shadow transition-colors duration-300
+  hover:bg-white hover:shadow-lg hover:-translate-y-1
+"
               >
                 <img
                   src={logo}
@@ -296,11 +303,11 @@ const TrustedBrands = () => {
                   loading="lazy"
                   decoding="async"
                   className="
-                    h-16 sm:h-20 md:h-24 object-contain
-                    opacity-50 grayscale
-                    transition-all duration-300
-                    group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105
-                  "
+    h-16 sm:h-20 md:h-24 object-contain
+    opacity-70
+    transition-transform transition-opacity duration-300
+    group-hover:opacity-100 group-hover:scale-105
+  "
                 />
               </div>
             ))}
