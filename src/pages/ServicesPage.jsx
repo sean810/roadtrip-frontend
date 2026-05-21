@@ -41,26 +41,45 @@ function useReveal(threshold = 0.15, { once = true } = {}) {
 
 function useParallax(speed = 0.08) {
   const ref = useRef(null);
+  const [isActive, setIsActive] = useState(false);
+  const rafId = useRef(null);
+
+  // Defer parallax initialization to improve initial page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsActive(true);
+    }, 400); // Delay after page transition completes
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
+    if (!isActive) return;
+
     const el = ref.current;
     if (!el) return;
 
-    let rafId;
+    let ticking = false;
 
     const update = () => {
-      const rect = el.getBoundingClientRect();
-      const center = rect.top + rect.height / 2 - window.innerHeight / 2;
-
-      el.style.transform = `translate3d(0, ${center * speed}px, 0)`;
-
-      rafId = requestAnimationFrame(update);
+      if (!ticking) {
+        ticking = true;
+        rafId.current = requestAnimationFrame(() => {
+          const rect = el.getBoundingClientRect();
+          const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+          el.style.transform = `translate3d(0, ${center * speed}px, 0)`;
+          ticking = false;
+        });
+      }
     };
 
-    update();
+    window.addEventListener("scroll", update, { passive: true });
 
-    return () => cancelAnimationFrame(rafId);
-  }, [speed]);
+    return () => {
+      window.removeEventListener("scroll", update);
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    };
+  }, [speed, isActive]);
 
   return ref;
 }

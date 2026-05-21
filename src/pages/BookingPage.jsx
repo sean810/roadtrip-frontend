@@ -49,16 +49,19 @@ function loadGoogleMapsScript() {
  */
 function usePlacesAutocomplete(inputRef, onChange, options = {}) {
   const [ready, setReady] = useState(false);
-  const acRef = useRef(null); // holds the Autocomplete instance
+  const acRef = useRef(null);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
+  // Load Google Maps only when user focuses on input (lazy loading)
   useEffect(() => {
+    if (!hasInteracted) return;
+
     let cancelled = false;
 
     loadGoogleMapsScript().then((loaded) => {
       if (cancelled || !loaded || !inputRef.current) return;
 
       const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-        // Bias results to Kenya; users can still type anywhere
         componentRestrictions: { country: "ke" },
         fields: ["formatted_address", "geometry", "name"],
         ...options,
@@ -69,7 +72,6 @@ function usePlacesAutocomplete(inputRef, onChange, options = {}) {
         if (place?.formatted_address) {
           onChange(place.formatted_address);
         } else if (place?.name) {
-          // Fallback: use the place name if no formatted address
           onChange(place.name);
         }
       });
@@ -80,15 +82,20 @@ function usePlacesAutocomplete(inputRef, onChange, options = {}) {
 
     return () => {
       cancelled = true;
-      // Clean up the listener when the component unmounts
       if (acRef.current && window.google?.maps?.event) {
         window.google.maps.event.clearInstanceListeners(acRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // intentionally empty — we only attach once on mount
+  }, [hasInteracted, inputRef, onChange, options]);
 
-  return { ready };
+  // Trigger Google Maps load on input focus
+  const onInputFocus = useCallback(() => {
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+  }, [hasInteracted]);
+
+  return { ready, onInputFocus };
 }
 
 /* ─────────────────────────────────────────
@@ -512,7 +519,7 @@ function LocationInput({ value, onChange, placeholder, hasError }) {
     }
   }, [value]);
 
-  const { ready } = usePlacesAutocomplete(
+  const { ready, onInputFocus } = usePlacesAutocomplete(
     inputRef,
     useCallback((address) => onChange(address), [onChange])
   );
@@ -529,6 +536,7 @@ function LocationInput({ value, onChange, placeholder, hasError }) {
           defaultValue={value}
           // Allow free typing too — sync on every keystroke so validation works
           onChange={(e) => onChange(e.target.value)}
+          onFocus={onInputFocus}
           autoComplete="off"
         />
       </div>
