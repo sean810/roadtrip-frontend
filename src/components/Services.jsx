@@ -80,7 +80,7 @@ const Services = () => {
   const [ctaRef, ctaVisible] = useReveal(0.2);
 
   return (
-    <section className="relative py-24 px-6 overflow-hidden" style={{ contain: 'layout' }}>
+    <section className="relative py-32 px-6 overflow-hidden" style={{ contain: 'layout' }}>
       {/* Ambient orbs */}
       <div
         className="pointer-events-none absolute -top-32 -left-24 w-[500px] h-[500px] rounded-full opacity-20 blur-3xl"
@@ -131,7 +131,7 @@ const Services = () => {
             style={{ background: "linear-gradient(90deg, #FF5C0B, #f97316)" }}
           />
 
-          <p className="mt-6 max-w-2xl mx-auto font-inter text-[#171E67]/80 text-base md:text-lg leading-relaxed">
+          <p className="mt-6 max-w-2xl mx-auto font-inter text-[#667085] text-base md:text-lg leading-relaxed">
             Whether you prefer driving yourself or riding with a professional,
             we provide flexible transport solutions designed to fit your
             journey across Kenya.
@@ -139,7 +139,7 @@ const Services = () => {
         </div>
 
         {/* Cards */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => (
             <RevealCard key={service.title} delay={index * 70}>
               <ServiceCard {...service} />
